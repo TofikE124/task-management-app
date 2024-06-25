@@ -39,8 +39,8 @@ const config: Config = {
         "white-hover": "#E0E0E0",
         red: "#EA5555",
         "red-hover": "#FF9898",
-        "linkes-dark": "#3E3F4E",
-        "linkes-light": "#E4EBFA",
+        "lines-dark": "#3E3F4E",
+        "lines-light": "#E4EBFA",
       },
       screens: {
         lg: "",

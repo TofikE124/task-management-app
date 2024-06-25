@@ -10,9 +10,9 @@ import useMountStatus from "../hooks/useMountStatus";
 
 const ThemeSwitch = () => {
   const mounted = useMountStatus();
-  if (!mounted) return <p>Loading...</p>;
-
   const { resolvedTheme, setTheme } = useTheme();
+
+  if (!mounted) return <p>Loading...</p>;
 
   return (
     <div className="py-4 px-16 rounded-md flex justify-center gap-6 bg-light-grey dark:bg-very-dark-grey">

@@ -1,8 +1,7 @@
 "use client";
-import Switch from "./components/Switch";
 import TaskColumns from "./components/TaskColumns";
 import PageHeader from "./layouts/PageHeader";
-import Sidebar from "./layouts/Sidebar";
+import Sidebar from "./layouts/sidebar/Sidebar";
 
 export default function Home() {
   return (

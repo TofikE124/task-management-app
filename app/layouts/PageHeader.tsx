@@ -1,14 +1,16 @@
-import React from "react";
-import Button from "../components/Button";
-import dotsIcon from "/public/images/icon-vertical-ellipsis.svg";
 import Image from "next/image";
+import Button from "../components/Button";
+import useCurrentBoard from "../hooks/useCurrentBoard";
+import dotsIcon from "/public/images/icon-vertical-ellipsis.svg";
 
 const PageHeader = () => {
+  const { currentBoard } = useCurrentBoard();
+
   return (
-    <div className="bg-white dark:bg-dark-grey border-b border-linkes-light dark:border-linkes-dark">
+    <div className="bg-white dark:bg-dark-grey border-b border-lines-light dark:border-lines-dark">
       <div className="flex items-center justify-between py-5 px-6 w-full">
         <h2 className="heading-xl text-black dark:text-white">
-          Platfrom Launch
+          {currentBoard?.title}
         </h2>
         <div className="flex items-center gap-5">
           <Button variant="primary" size="sm" disabled>
