@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.scss";
+import { ThemeProvider } from "next-themes";
+import ThemeWrapper from "./components/ThemeWrapper";
 
-const inter = Inter({ subsets: ["latin"] });
+const plus_jakarta_sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={plus_jakarta_sans.className}>
+        <ThemeProvider>
+          <ThemeWrapper>{children}</ThemeWrapper>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

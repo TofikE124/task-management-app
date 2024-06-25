@@ -1,0 +1,49 @@
+/* Specific classes */
+.heading-xl {
+  font-size: 1.5rem;
+}
+
+.heading-l {
+  font-size: 1.125rem;
+}
+
+.heading-m {
+  font-size: 0.9375rem;
+}
+
+.heading-s {
+  font-size: 0.75rem;
+  letter-spacing: 2.4px;
+}
+
+.body-l {
+  font-size: 0.8125rem;
+  line-height: 1.76;
+  font-weight: 500;
+}
+
+body {
+  font-size: 0.75rem;
+}
+
+@screen md {
+  .heading-xl {
+    font-size: 1.25rem;
+  }
+}
+
+@screen sm {
+  .heading-xl {
+    font-size: 1.125rem;
+  }
+}
+
+/* Grouped classes with the same line-height and weight */
+.heading-xl,
+.heading-l,
+.heading-m,
+.heading-s,
+body {
+  line-height: 1.25;
+  font-weight: 700;
+}
