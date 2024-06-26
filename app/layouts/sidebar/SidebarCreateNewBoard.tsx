@@ -11,7 +11,7 @@ const SidebarCreateNewBoard = () => {
         onClick={() => openPanel(PANELS.NEW_BOARD_PANEL)}
         className="relative cursor-pointer group select-none"
       >
-        <div className="flex gap-4 relative z-20">
+        <div className="flex gap-4 py-4 relative z-20">
           <Icon
             width={16}
             height={16}

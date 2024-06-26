@@ -9,6 +9,7 @@ export const saveToLocalStorage = (data: AppData) => {
 };
 
 export const loadFromLocalStorage = (): { boards: Board[] } => {
+  if (typeof localStorage == "undefined") return { boards: [] };
   const data = localStorage.getItem(STORAGE_KEY);
   return data ? JSON.parse(data) : { boards: [] };
 };

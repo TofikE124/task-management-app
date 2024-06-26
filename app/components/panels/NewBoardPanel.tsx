@@ -1,6 +1,6 @@
 import { usePanel } from "@/app/contexts/PanelProvider";
 import { boardSchema } from "@/app/schemas/boardSchema";
-import { createBoard } from "@/app/services/taskService";
+import { createBoard, fetchBoards } from "@/app/services/taskService";
 import { Board } from "@/app/types/taskTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
@@ -11,11 +11,13 @@ import Panel from "../Panel";
 import TextField from "../TextField";
 import ListEditor from "../listEditor/ListEditor";
 import { PANELS } from "@/app/constatnts/panels";
+import { useEffect } from "react";
+import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
 
 type boardSchemaType = z.infer<typeof boardSchema>;
 
 const NewBoardPanel = () => {
-  const { closePanel } = usePanel();
+  const { closePanel, isPanelOpen } = usePanel();
 
   const methods = useForm<boardSchemaType>({
     resolver: zodResolver(boardSchema),
@@ -27,22 +29,34 @@ const NewBoardPanel = () => {
     handleSubmit,
     register,
     formState: { errors },
+    setError,
     watch,
+    reset,
   } = methods;
 
-  const onSubmit = (data: boardSchemaType) => {
-    const newBoard: Board = {
-      id: v4(),
-      title: data.name,
-      columns: data.list.map((item) => ({
-        id: item.id,
-        color: "#fff",
-        title: item.value,
-        tasks: [],
-      })),
-    };
+  useOnPanelClose(PANELS.NEW_BOARD_PANEL, reset);
 
-    createBoard(newBoard);
+  const onSubmit = (data: boardSchemaType) => {
+    fetchBoards().then((boards) => {
+      if (!boards.every((board) => board.title != data.name)) {
+        setError("name", {
+          message: `Board with the name "${data.name}" already exists`,
+        });
+      } else {
+        const newBoard: Board = {
+          id: v4(),
+          title: data.name,
+          columns: data.list.map((item) => ({
+            id: item.id,
+            color: "#fff",
+            title: item.value,
+            tasks: [],
+          })),
+        };
+        createBoard(newBoard);
+        closePanel(PANELS.NEW_BOARD_PANEL);
+      }
+    });
   };
 
   return (
@@ -63,12 +77,7 @@ const NewBoardPanel = () => {
               title="Board Columns"
               addButtonTitle="+ Add New Column"
             ></ListEditor>
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-              onClick={() => closePanel(PANELS.NEW_BOARD_PANEL)}
-            >
+            <Button type="submit" variant="primary" size="sm">
               Create New Board
             </Button>
           </div>

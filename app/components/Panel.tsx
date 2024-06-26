@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { usePanel } from "../contexts/PanelProvider";
 interface PanelProps {
   name: string;

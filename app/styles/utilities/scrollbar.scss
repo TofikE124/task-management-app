@@ -1,0 +1,16 @@
+.scrollbar-rounded {
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background-color: theme("colors.medium-grey");
+    border-radius: 10px;
+  }
+}

@@ -5,6 +5,7 @@ import { Schema, z, ZodArray } from "zod";
 import Button from "../Button";
 import ListEditorItem, { Item } from "./ListEditorItem";
 import { listType } from "@/app/schemas/boardSchema";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   title: string;
@@ -16,7 +17,6 @@ const ListEditor = ({ title, addButtonTitle }: Props) => {
     list: listType,
   });
   type schemaType = z.infer<typeof schema>;
-
   const {
     register,
     watch,
@@ -58,32 +58,42 @@ const ListEditor = ({ title, addButtonTitle }: Props) => {
     return { indexA, indexB };
   };
 
+  const containerRef = useRef(null);
+
   return (
     <div className="flex flex-col">
       <p className="text-medium-grey">{title}</p>
-      <Reorder.Group
-        axis="y"
-        values={list}
-        onReorder={handleReorder}
-        className="flex flex-col gap-3 mt-2"
+      <div
+        className={`${
+          false ? "overflow-y-hidden" : "overflow-y-auto"
+        } max-h-[150px] scrollbar-rounded pr-4`}
+        ref={containerRef}
       >
-        {list.map((item: Item, index: number) => (
-          <ListEditorItem
-            key={item.id}
-            item={item}
-            onRemove={() => removePlatform(index)}
-            errorMessage={(errors["list"] || [])[index]?.value?.message}
-            {...register(`list.${index}.value`)}
-          />
-        ))}
-      </Reorder.Group>
+        <Reorder.Group
+          axis="y"
+          values={list}
+          onReorder={handleReorder}
+          className="mt-2 space-y-3"
+        >
+          {list.map((item: Item, index: number) => (
+            <ListEditorItem
+              key={item.id}
+              index={index}
+              item={item}
+              onRemove={() => removePlatform(index)}
+              ref={containerRef}
+              errorMessage={(errors["list"] || [])[index]?.value?.message}
+            />
+          ))}
+        </Reorder.Group>
+      </div>
 
       <Button
         variant="secondary"
         size="sm"
-        className="mt-3"
         onClick={handleAdd}
         type="button"
+        className="mt-3"
       >
         {addButtonTitle}
       </Button>
