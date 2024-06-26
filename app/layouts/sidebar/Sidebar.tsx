@@ -1,16 +1,13 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import ThemeSwitch from "../../components/ThemeSwitch";
-import { getBoardSummaries } from "../../services/taskService";
-import { BoardSummary } from "../../types/taskTypes";
 
+import useBoardSummaries from "@/app/hooks/useBoardSummaries";
 import useCurrentBoard from "../../hooks/useCurrentBoard";
 import SidebarBoardSummary from "./SidebarBoardSummary";
+import SidebarCreateNewBoard from "./SidebarCreateNewBoard";
 import hideSidebar from "/public/images/icon-hide-sidebar.svg";
 import logoDark from "/public/images/logo-dark.svg";
 import logoLight from "/public/images/logo-light.svg";
-import useBoardSummaries from "@/app/hooks/useBoardSummaries";
-import SidebarCreateNewBoard from "./SidebarCreateNewBoard";
 
 const Sidebar = () => {
   const { boardSummaries } = useBoardSummaries();

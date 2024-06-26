@@ -1,5 +1,5 @@
-import { title } from "process";
-import React from "react";
+import React, { forwardRef } from "react";
+import Input from "./Input";
 
 interface TextFieldProps {
   title: string;
@@ -8,30 +8,29 @@ interface TextFieldProps {
   errorMessage?: string;
 }
 
-const TextField = ({
-  title,
-  placeholder,
-  defaultValue,
-  errorMessage,
-}: TextFieldProps) => {
-  return (
-    <div className="flex flex-col gap-2 max-w-[350px]">
-      <p className="text-medium-grey dark:text-white">{title}</p>
-      <div
-        className={`flex items-center border rounded-[4px] py-2 px-4 ${
-          errorMessage ? "border-red" : "border-medium-grey-25"
-        }`}
-      >
-        <input
-          className={` bg-transparent outline-none grow ${
-            errorMessage ? "text-red" : "text-black dark:text-white"
-          }`}
+const TextField = forwardRef(
+  (
+    {
+      title,
+      placeholder,
+      defaultValue,
+      errorMessage,
+      ...props
+    }: TextFieldProps,
+    ref
+  ) => {
+    return (
+      <div className="flex flex-col gap-2 w-full">
+        <p className="text-medium-grey dark:text-white">{title}</p>
+        <Input
+          {...props}
+          ref={ref}
+          errorMessage={errorMessage}
           placeholder={placeholder}
-        />
-        <p className="body-l text-red">{errorMessage}</p>
+        ></Input>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default TextField;

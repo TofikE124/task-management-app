@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.scss";
 import { ThemeProvider } from "next-themes";
 import ThemeWrapper from "./components/ThemeWrapper";
+import { PanelProvider } from "./contexts/PanelProvider";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -23,7 +24,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={plus_jakarta_sans.className}>
         <ThemeProvider>
-          <ThemeWrapper>{children}</ThemeWrapper>
+          <PanelProvider>
+            <ThemeWrapper>{children}</ThemeWrapper>
+          </PanelProvider>
         </ThemeProvider>
       </body>
     </html>

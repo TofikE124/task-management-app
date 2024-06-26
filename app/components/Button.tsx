@@ -14,7 +14,7 @@ const buttonStyles = cva(
         ],
         secondary: [
           "text-main-purple",
-          "bg-main-purple",
+          "bg-main-purple-10",
           "hover:enabled:bg-main-purple-25",
           "dark:bg-white",
           "dark:hover:enabled:bg-white-hover",

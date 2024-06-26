@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   getBoardData,
-  getBoardSummaries,
   getCurrentBoardId,
+  getFirstBoardId,
   saveCurrentBoardId,
 } from "../services/taskService";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,21 +15,16 @@ const useCurrentBoard = () => {
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null);
 
   useEffect(() => {
-    setCurrentBoardId(getCurrentBoardId());
+    if (getCurrentBoardId()) setCurrentBoardId(getCurrentBoardId());
+    else setCurrentBoardId(getFirstBoardId());
   }, [searchParams]);
 
   useEffect(() => {
     if (currentBoardId) {
       navigateToBoard(currentBoardId);
       getBoardData(currentBoardId).then((board) => setCurrentBoard(board));
-    } else {
-      getBoardSummaries().then((summaries) => {
-        setCurrentBoardId(summaries[0]?.id);
-      });
     }
   }, [currentBoardId]);
-
-  useEffect(() => {}, [currentBoardId]);
 
   const navigateToBoard = (boardId: string) => {
     router.push(`/?currentBoardId=${boardId}`);

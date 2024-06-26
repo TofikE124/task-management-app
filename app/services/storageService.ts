@@ -1,10 +1,10 @@
 // services/localStorageService.js
 
-import { Board } from "../types/taskTypes";
+import { AppData, Board } from "../types/taskTypes";
 
 const STORAGE_KEY = "taskData";
 
-export const saveToLocalStorage = (data: Board[]) => {
+export const saveToLocalStorage = (data: AppData) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 

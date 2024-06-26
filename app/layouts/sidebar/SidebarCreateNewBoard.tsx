@@ -1,18 +1,28 @@
 import Icon from "@/app/components/Icon";
+import NewBoardPanel from "@/app/components/panels/NewBoardPanel";
+import { PANELS } from "@/app/constatnts/panels";
+import { usePanel } from "@/app/contexts/PanelProvider";
 
 const SidebarCreateNewBoard = () => {
+  const { openPanel } = usePanel();
   return (
-    <div className="relative cursor-pointer group select-none">
-      <div className="flex gap-4 relative z-20">
-        <Icon
-          width={16}
-          height={16}
-          src="/images/icon-board.svg"
-          bgColorClass="bg-main-purple"
-        ></Icon>
-        <h3 className="heading-m text-main-purple">+ Create New Board</h3>
+    <>
+      <div
+        onClick={() => openPanel(PANELS.NEW_BOARD_PANEL)}
+        className="relative cursor-pointer group select-none"
+      >
+        <div className="flex gap-4 relative z-20">
+          <Icon
+            width={16}
+            height={16}
+            src="/images/icon-board.svg"
+            bgColorClass="bg-main-purple"
+          ></Icon>
+          <h3 className="heading-m text-main-purple">+ Create New Board</h3>
+        </div>
       </div>
-    </div>
+      <NewBoardPanel></NewBoardPanel>
+    </>
   );
 };
 
