@@ -11,7 +11,7 @@ const DropdownTrigger = () => {
       onClick={() => toggleDropdown()}
       className="peer rounded-[4px] py-2 px-4 min-h-10 text-black dark:text-white border border-medium-grey-25 flex items-center justify-between select-none cursor-pointer b-lg fw-medium group-toggled:border group-toggled:border-main-purple"
     >
-      {selectedOption || "Loading..."}
+      {selectedOption?.label || "Loading..."}
 
       {/* Arrow Icon */}
       <div className="peer w-[10px] h-[5px] transition-transform duration-[250ms] ease-in-out grid group-toggled:rotate-[180deg]">

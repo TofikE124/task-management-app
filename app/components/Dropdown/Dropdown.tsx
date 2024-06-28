@@ -2,14 +2,14 @@ import React, { PropsWithChildren } from "react";
 import DropdownTitle from "./DropdownTitle";
 import DropdownContainer from "./DropdownContainer";
 import DropdownElements from "./DropdownElements";
-import DropdownOption from "./DropdownOption";
+import DropdownOption, { Option } from "./DropdownOption";
 import DropdownTrigger from "./DropdownTrigger";
 
 interface Props {
-  options: string[];
-  defaultOption?: string;
+  options: Option[];
+  defaultOption?: Option;
   title: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: Option) => void;
 }
 
 const Dropdown = ({
@@ -21,11 +21,13 @@ const Dropdown = ({
   return (
     <Dropdown.Container onChange={onChange}>
       <Dropdown.Title>{title}</Dropdown.Title>
+      <Dropdown.Trigger></Dropdown.Trigger>
       <Dropdown.Elements>
         {options.map((option, index) => (
           <Dropdown.Option
+            key={index}
             defaultOption={defaultOption ? option == defaultOption : index == 0}
-            value={option}
+            option={option}
           ></Dropdown.Option>
         ))}
       </Dropdown.Elements>

@@ -6,6 +6,9 @@ import { FiTrash } from "react-icons/fi";
 import { deleteTask, moveTask } from "../services/taskService";
 import { motion } from "framer-motion";
 import { Button, MotionButton } from "./Button";
+import { usePanel } from "../contexts/PanelProvider";
+import { PANELS } from "../constatnts/panels";
+import { useTaskData } from "../hooks/useTaskData";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
@@ -240,8 +243,22 @@ interface AddTaskProps {
 }
 
 const AddTask = ({ column }: AddTaskProps) => {
+  const { openPanel } = usePanel();
+  const { updateTaskData } = useTaskData();
+
+  const handleClick = () => {
+    updateTaskData({ activeColumn: column });
+    openPanel(PANELS.NEW_TASK_PANEL);
+  };
+
   return (
-    <MotionButton layout variant="primary" size="sm" className="w-full">
+    <MotionButton
+      layout
+      variant="primary"
+      size="sm"
+      className="w-full"
+      onClick={handleClick}
+    >
       + Add Task
     </MotionButton>
   );

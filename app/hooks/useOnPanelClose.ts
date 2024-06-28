@@ -6,6 +6,6 @@ export const useOnPanelClose = (panelName: PANELS, callback: () => void) => {
   const { isPanelOpen } = usePanel();
 
   useEffect(() => {
-    if (!isPanelOpen(PANELS.NEW_BOARD_PANEL)) callback();
-  }, [isPanelOpen(PANELS.NEW_BOARD_PANEL)]);
+    if (!isPanelOpen(panelName)) callback();
+  }, [isPanelOpen(panelName)]);
 };

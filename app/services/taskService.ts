@@ -127,9 +127,26 @@ export const deleteTask = async (
     if (!column) return;
     column.tasks = column.tasks.filter((task) => task.id !== taskId);
 
-    console.log(column);
     const appData = { boards };
     updateAppData(appData);
+  }
+};
+
+export const createTask = (
+  boardId: string,
+  task: TaskType,
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    if (!board) return;
+
+    const column = findColumn(board.columns, task.status);
+    column?.tasks.push(task);
+
+    updateAppData({ boards });
   }
 };
 

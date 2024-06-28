@@ -2,7 +2,6 @@ import React, { ComponentProps, forwardRef, LegacyRef } from "react";
 
 interface Props {
   errorMessage?: string;
-  placeholder: string;
 }
 const Input = forwardRef(
   (

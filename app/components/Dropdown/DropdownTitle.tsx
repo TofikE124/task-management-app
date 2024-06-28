@@ -7,12 +7,9 @@ interface Props {
 }
 const DropdownTitle = ({ children }: Props) => {
   return (
-    <>
-      <p className="text-medium-grey dark:text-white mb-2 h-sm fw-bold">
-        {children}
-      </p>
-      <DropdownTrigger></DropdownTrigger>
-    </>
+    <p className="text-medium-grey dark:text-white mb-2 h-sm fw-bold">
+      {children}
+    </p>
   );
 };
 

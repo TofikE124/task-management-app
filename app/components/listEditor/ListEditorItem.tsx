@@ -13,6 +13,7 @@ interface Props {
   index: number;
   onRemove: () => void;
   errorMessage?: string;
+  placeholder?: string;
 }
 
 export interface Item {
@@ -21,7 +22,7 @@ export interface Item {
 }
 
 const ListEditorItem = forwardRef(
-  ({ item, onRemove, errorMessage, index }: Props, ref) => {
+  ({ item, onRemove, errorMessage, placeholder, index }: Props, ref) => {
     const controls = useDragControls();
 
     const { register } = useFormContext();
@@ -54,7 +55,7 @@ const ListEditorItem = forwardRef(
 
           <div className="flex items-center gap-4 w-full">
             <Input
-              placeholder="e.g Make coffee"
+              placeholder={placeholder}
               errorMessage={errorMessage}
               {...register(`list.${index}.value`)}
             ></Input>

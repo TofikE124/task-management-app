@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
-import "./globals.scss";
 import { ThemeProvider } from "next-themes";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import ThemeWrapper from "./components/ThemeWrapper";
 import { PanelProvider } from "./contexts/PanelProvider";
 import SidebarProvider from "./contexts/SidebarProvider";
+import "./globals.scss";
+import { TaskDataProvider } from "./contexts/TaskDataContext";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -27,7 +28,9 @@ export default function RootLayout({
         <ThemeProvider>
           <PanelProvider>
             <SidebarProvider>
-              <ThemeWrapper>{children}</ThemeWrapper>
+              <TaskDataProvider>
+                <ThemeWrapper>{children}</ThemeWrapper>
+              </TaskDataProvider>
             </SidebarProvider>
           </PanelProvider>
         </ThemeProvider>

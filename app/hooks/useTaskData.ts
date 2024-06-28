@@ -1,12 +1,10 @@
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
+import { TaskDataContext } from "../contexts/TaskDataContext";
 
-const useTaskData = () => {
-  const [data, setData] = useState(null);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {}, [searchParams]);
+export const useTaskData = () => {
+  const context = useContext(TaskDataContext);
+  if (!context) {
+    throw new Error("useTaskData must be used within a TaskDataProvider");
+  }
+  return context;
 };
-
-export default useTaskData;

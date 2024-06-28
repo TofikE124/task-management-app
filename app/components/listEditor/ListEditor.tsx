@@ -1,18 +1,19 @@
 import { Reorder } from "framer-motion";
+import { useRef } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 } from "uuid";
-import { Schema, z, ZodArray } from "zod";
-import ListEditorItem, { Item } from "./ListEditorItem";
-import { listType } from "@/app/schemas/boardSchema";
-import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 import { Button } from "../Button";
+import ListEditorItem, { Item } from "./ListEditorItem";
+import { listType } from "@/app/schemas/listType";
 
 interface Props {
   title: string;
   addButtonTitle: string;
+  itemPlaceholder: string;
 }
 
-const ListEditor = ({ title, addButtonTitle }: Props) => {
+const ListEditor = ({ title, addButtonTitle, itemPlaceholder }: Props) => {
   const schema = z.object({
     list: listType,
   });
@@ -83,6 +84,7 @@ const ListEditor = ({ title, addButtonTitle }: Props) => {
               onRemove={() => removePlatform(index)}
               ref={containerRef}
               errorMessage={(errors["list"] || [])[index]?.value?.message}
+              placeholder={itemPlaceholder}
             />
           ))}
         </Reorder.Group>

@@ -21,7 +21,6 @@ const SidebarCreateNewBoard = () => {
           <h3 className="heading-m text-main-purple">+ Create New Board</h3>
         </div>
       </div>
-      <NewBoardPanel></NewBoardPanel>
     </>
   );
 };
