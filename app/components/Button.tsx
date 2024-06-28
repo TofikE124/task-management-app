@@ -1,6 +1,7 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
+import { HTMLMotionProps, motion, MotionProps } from "framer-motion";
 
 const buttonStyles = cva(
   ["transition-colors", "duration-200", "text-nowrap", "cursor-pointer"],
@@ -30,13 +31,15 @@ const buttonStyles = cva(
   }
 );
 
-type ButtonProps = VariantProps<typeof buttonStyles> & ComponentProps<"button">;
+type ButtonProps = VariantProps<typeof buttonStyles> &
+  ComponentProps<"button"> & { isMotion?: boolean };
 
-const Button = ({
+export const Button = ({
   variant,
   size,
   className,
   disabled = false,
+  isMotion = false,
   ...props
 }: ButtonProps) => {
   return (
@@ -52,4 +55,25 @@ const Button = ({
   );
 };
 
-export default Button;
+type MotionButtonProps = VariantProps<typeof buttonStyles> &
+  HTMLMotionProps<"button">;
+
+export const MotionButton = ({
+  variant,
+  size,
+  className,
+  disabled = false,
+  ...props
+}: MotionButtonProps) => {
+  return (
+    <motion.button
+      disabled={disabled}
+      {...props}
+      className={twMerge(
+        buttonStyles({ variant, size }),
+        className,
+        `${disabled ? "opacity-50 cursor-not-allowed" : ""}`
+      )}
+    ></motion.button>
+  );
+};

@@ -8,7 +8,7 @@ const ThemeWrapper = ({ children }: PropsWithChildren) => {
   const mounted = useMountStatus();
 
   return (
-    <div className={resolvedTheme == "dark" && mounted ? "dark" : ""}>
+    <div className={`${resolvedTheme == "dark" && mounted ? "dark" : ""}`}>
       {children}
     </div>
   );

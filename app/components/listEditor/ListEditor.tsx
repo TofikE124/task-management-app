@@ -2,10 +2,10 @@ import { Reorder } from "framer-motion";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 } from "uuid";
 import { Schema, z, ZodArray } from "zod";
-import Button from "../Button";
 import ListEditorItem, { Item } from "./ListEditorItem";
 import { listType } from "@/app/schemas/boardSchema";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../Button";
 
 interface Props {
   title: string;

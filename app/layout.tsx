@@ -4,6 +4,7 @@ import "./globals.scss";
 import { ThemeProvider } from "next-themes";
 import ThemeWrapper from "./components/ThemeWrapper";
 import { PanelProvider } from "./contexts/PanelProvider";
+import SidebarProvider from "./contexts/SidebarProvider";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({
       <body className={plus_jakarta_sans.className}>
         <ThemeProvider>
           <PanelProvider>
-            <ThemeWrapper>{children}</ThemeWrapper>
+            <SidebarProvider>
+              <ThemeWrapper>{children}</ThemeWrapper>
+            </SidebarProvider>
           </PanelProvider>
         </ThemeProvider>
       </body>

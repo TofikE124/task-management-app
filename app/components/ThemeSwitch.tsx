@@ -15,7 +15,7 @@ const ThemeSwitch = () => {
   if (!mounted) return <p>Loading...</p>;
 
   return (
-    <div className="py-4 px-16 rounded-md flex justify-center gap-6 bg-light-grey dark:bg-very-dark-grey">
+    <div className="py-4 w-[250px] rounded-md flex justify-center gap-6 bg-light-grey dark:bg-very-dark-grey">
       <Image width={18} height={18} alt="Light Theme icon" src={lightTheme} />
       <Switch
         defaultChecked={resolvedTheme == "dark"}

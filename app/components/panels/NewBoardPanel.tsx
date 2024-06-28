@@ -1,18 +1,18 @@
 import { usePanel } from "@/app/contexts/PanelProvider";
 import { boardSchema } from "@/app/schemas/boardSchema";
 import { createBoard, fetchBoards } from "@/app/services/taskService";
-import { Board } from "@/app/types/taskTypes";
+import { BoardType } from "@/app/types/taskTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
-import Button from "../Button";
 import Panel from "../Panel";
 import TextField from "../TextField";
 import ListEditor from "../listEditor/ListEditor";
 import { PANELS } from "@/app/constatnts/panels";
 import { useEffect } from "react";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
+import { Button } from "../Button";
 
 type boardSchemaType = z.infer<typeof boardSchema>;
 
@@ -43,7 +43,7 @@ const NewBoardPanel = () => {
           message: `Board with the name "${data.name}" already exists`,
         });
       } else {
-        const newBoard: Board = {
+        const newBoard: BoardType = {
           id: v4(),
           title: data.name,
           columns: data.list.map((item) => ({

@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Button from "../components/Button";
 import useCurrentBoard from "../hooks/useCurrentBoard";
 import dotsIcon from "/public/images/icon-vertical-ellipsis.svg";
+import { Button } from "../components/Button";
 
 const PageHeader = () => {
   const { currentBoard } = useCurrentBoard();
@@ -13,7 +13,11 @@ const PageHeader = () => {
           {currentBoard?.title}
         </h2>
         <div className="flex items-center gap-5">
-          <Button variant="primary" size="sm" disabled>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={!currentBoard?.columns.length}
+          >
             + Add New Task
           </Button>
           <div className="cursor-pointer px-[6px] select-none">

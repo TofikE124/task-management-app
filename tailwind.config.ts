@@ -30,6 +30,7 @@ const config: Config = {
         "main-purple-10": "rgba(99, 95, 199, 0.1)",
         "main-purple-25": "rgba(99, 95, 199, 0.25)",
         black: "#000112",
+        "slate-grey": "#40414B",
         "dark-grey": "#2B2C37",
         "very-dark-grey": "#20212C",
         "medium-grey": "#828FA3",

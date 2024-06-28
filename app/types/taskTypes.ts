@@ -1,28 +1,28 @@
 // Represents the entire application data structure
 export interface AppData {
-  boards: Board[];
+  boards: BoardType[];
 }
 
 // Represents a board with columns
-export interface Board {
+export interface BoardType {
   id: string;
   title: string;
-  columns: Column[];
+  columns: ColumnType[];
 }
 
 // Represents a summary of a board without columns
-export type BoardSummary = Omit<Board, "columns">;
+export type BoardSummary = Omit<BoardType, "columns">;
 
 // Represents a column within a board
-export interface Column {
+export interface ColumnType {
   id: string;
   title: string;
   color: string;
-  tasks: Task[];
+  tasks: TaskType[];
 }
 
 // Represents a task within a column
-export interface Task {
+export interface TaskType {
   id: string;
   title: string;
   description: string;

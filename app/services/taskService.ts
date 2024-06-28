@@ -1,5 +1,11 @@
-import { BehaviorSubject, map } from "rxjs";
-import { AppData, Board, BoardSummary } from "../types/taskTypes";
+import { BehaviorSubject, iif, map } from "rxjs";
+import {
+  AppData,
+  BoardType,
+  BoardSummary,
+  ColumnType,
+  TaskType,
+} from "../types/taskTypes";
 import { loadFromLocalStorage, saveToLocalStorage } from "./storageService";
 
 // BehaviorSubject for app-wide state
@@ -9,7 +15,7 @@ const appDataSubject = new BehaviorSubject<AppData>({ boards: [] });
 export const appData$ = appDataSubject.asObservable();
 
 // Observable for boards
-export const board$ = appData$.pipe(map(({ boards }) => boards));
+export const boards$ = appData$.pipe(map(({ boards }) => boards));
 
 // Observable for board summaries
 export const boardSummaries$ = appData$.pipe(
@@ -33,7 +39,7 @@ const getAppData = async (userId?: string): Promise<AppData> => {
 };
 
 // Function to convert boards to summaries
-const fromBoardsToSummaries = (boards: Board[]): BoardSummary[] => {
+const fromBoardsToSummaries = (boards: BoardType[]): BoardSummary[] => {
   return boards.map(({ id, title }) => ({ id, title }));
 };
 
@@ -41,7 +47,7 @@ const fromBoardsToSummaries = (boards: Board[]): BoardSummary[] => {
 export const getBoardData = async (
   boardId: string,
   userId?: string
-): Promise<Board | null> => {
+): Promise<BoardType | null> => {
   if (userId) {
     // Placeholder for future database interaction
   } else {
@@ -68,10 +74,10 @@ export const saveCurrentBoardId = (currentBoardId: string) => {
 
 // Function to create a new board
 export const createBoard = async (
-  newBoard: Board,
+  newBoard: BoardType,
   userId?: string
-): Promise<Board | null> => {
-  let addedBoard: Board | null = null;
+): Promise<BoardType | null> => {
+  let addedBoard: BoardType | null = null;
 
   if (userId) {
     // Placeholder for future database interaction
@@ -99,7 +105,78 @@ export const fetchBoardSummaries = async (): Promise<BoardSummary[]> => {
 };
 
 // Function to fetch boards on demand
-export const fetchBoards = async (): Promise<Board[]> => {
+export const fetchBoards = async (): Promise<BoardType[]> => {
   const data = await getAppData();
   return data.boards;
+};
+
+// Funcion to delete a task
+
+export const deleteTask = async (
+  boardId: string,
+  columnId: string,
+  taskId: string,
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    if (!board) return;
+    const column = findColumn(board.columns, columnId);
+    if (!column) return;
+    column.tasks = column.tasks.filter((task) => task.id !== taskId);
+
+    console.log(column);
+    const appData = { boards };
+    updateAppData(appData);
+  }
+};
+
+export const moveTask = (
+  boardId: string,
+  columnId: string,
+  newColumnId: string,
+  taskId: string,
+  beforeId: string,
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    if (!board) return;
+    const column = findColumn(board.columns, columnId);
+    const newColumn = findColumn(board.columns, newColumnId);
+    if (!column || !newColumn) return;
+
+    const taskToMove = findTask(column?.tasks, taskId);
+    if (!taskToMove) return;
+
+    column.tasks = column.tasks.filter((task) => task != taskToMove);
+    const index = newColumn.tasks.findIndex((task) => task.id == beforeId);
+    if (beforeId == "-1") {
+      newColumn.tasks = [...newColumn.tasks, taskToMove];
+    } else {
+      newColumn.tasks.splice(index, 0, taskToMove);
+    }
+    updateAppData({ boards });
+  }
+};
+
+const updateAppData = (appData: AppData) => {
+  saveToLocalStorage(appData);
+  appDataSubject.next(appData);
+};
+
+const findBoard = (boards: BoardType[], boardId: string) => {
+  return boards.find((board) => board.id == boardId);
+};
+
+const findColumn = (columns: ColumnType[], columnId: string) => {
+  return columns.find((col) => col.id == columnId);
+};
+
+const findTask = (tasks: TaskType[], taskId: string) => {
+  return tasks.find((task) => task.id == taskId);
 };
