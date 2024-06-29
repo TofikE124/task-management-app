@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { v4 } from "uuid";
-import { boolean, z } from "zod";
+import { z } from "zod";
 
 import { PANELS } from "@/app/constatnts/panels";
 import { usePanel } from "@/app/contexts/PanelProvider";
 import useCurrentBoard from "@/app/hooks/useCurrentBoard";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
-import { taskSchema } from "@/app/schemas/taskSchema";
 import { useTaskData } from "@/app/hooks/useTaskData";
+import { taskSchema } from "@/app/schemas/taskSchema";
 import {
   createTask,
   editTask,
@@ -25,12 +25,7 @@ import ListEditor from "../listEditor/ListEditor";
 import Panel from "../Panel";
 import TextField from "../TextField";
 
-import {
-  BoardType,
-  ColumnType,
-  Subtask,
-  TaskType,
-} from "@/app/types/taskTypes";
+import { Subtask, TaskType } from "@/app/types/taskTypes";
 
 const getIsSubtaskChecked = (subtasks: Subtask[], subtaskId: string) => {
   return subtasks.find((sub) => sub.id == subtaskId)?.checked || false;

@@ -15,7 +15,7 @@ const Panel = ({ children, name }: PanelProps) => {
       }`}
     >
       <div
-        className={`relative z-30 bg-white dark:bg-dark-grey p-8 rounded-md min-w-[480px] transition-transform duration-300 ${
+        className={`relative z-30 bg-white dark:bg-dark-grey p-8 rounded-md min-w-[400px] max-w-[480px] transition-transform duration-300 ${
           isPanelOpen(name) ? "scale-100" : "scale-0"
         }`}
       >

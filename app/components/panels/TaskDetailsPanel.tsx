@@ -105,6 +105,11 @@ const TaskMoreOptions = () => {
     setIsVisible(false);
   };
 
+  const handleDelete = () => {
+    openPanel(PANELS.DELETE_TASK_PANEL);
+    setIsVisible(false);
+  };
+
   useOnPanelClose(PANELS.TASK_DETAILS_PANEL, () => setIsVisible(false));
 
   useEffect(() => {
@@ -150,7 +155,10 @@ const TaskMoreOptions = () => {
         >
           Edit Task
         </p>
-        <p className="body-l text-red text-nowrap hover:underline cursor-pointer">
+        <p
+          onClick={handleDelete}
+          className="body-l text-red text-nowrap hover:underline cursor-pointer"
+        >
           Delete Task
         </p>
       </div>
