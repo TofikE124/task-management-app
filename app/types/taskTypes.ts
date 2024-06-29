@@ -27,11 +27,12 @@ export interface TaskType {
   title: string;
   description: string;
   subtasks: Subtask[];
-  status: string;
+  columnId: string;
 }
 
 // Represents a subtask within a task
 export interface Subtask {
   id: string;
   title: string;
+  checked: boolean;
 }

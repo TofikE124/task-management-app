@@ -30,7 +30,7 @@ const DropdownOption = ({ option, defaultOption }: Props) => {
     <p
       onClick={handleClick}
       className={`text-medium-grey py-1 px-4 cursor-pointer select-none hover:bg-main-purple hover:text-white transition-colors duration-200 ${
-        selectedOption == option ? "bg-main-purple text-white" : ""
+        selectedOption?.value == option.value ? "bg-main-purple text-white" : ""
       }`}
     >
       {option.label}

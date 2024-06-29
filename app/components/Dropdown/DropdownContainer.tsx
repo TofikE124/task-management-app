@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "next-themes";
-import { createContext, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { Option } from "./DropdownOption";
 
 interface Props {
@@ -18,11 +18,13 @@ export const dropdownContext = createContext<DropdownContext>(
 );
 
 const DropdownContainer = ({ children, onChange = () => {} }: Props) => {
+  const [isVisible, setIsVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const { resolvedTheme } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
+
   function toggleDropdown() {
-    ref.current?.classList.toggle("toggled");
+    setIsVisible((v) => !v);
   }
 
   function updateSelectedOption(option: Option) {
@@ -30,13 +32,28 @@ const DropdownContainer = ({ children, onChange = () => {} }: Props) => {
     setSelectedOption(option);
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as HTMLElement))
+        setIsVisible(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
+
   return (
     <dropdownContext.Provider
       value={{ toggleDropdown, selectedOption, updateSelectedOption }}
     >
       <div
         ref={ref}
-        className={`group relative w-full ${resolvedTheme}`}
+        className={`group relative w-full ${
+          isVisible ? "toggled" : ""
+        } ${resolvedTheme}`}
         suppressHydrationWarning
       >
         {children}

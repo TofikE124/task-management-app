@@ -2,17 +2,17 @@ import Image from "next/image";
 import ThemeSwitch from "../../components/ThemeSwitch";
 
 import useBoardSummaries from "@/app/hooks/useBoardSummaries";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRef } from "react";
 import useCurrentBoard from "../../hooks/useCurrentBoard";
 import SidebarBoardSummary from "./SidebarBoardSummary";
 import SidebarCreateNewBoard from "./SidebarCreateNewBoard";
-import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
 
+import { useSidebarProvider } from "@/app/hooks/useSidebarProvider";
 import hideSidebarIcon from "/public/images/icon-hide-sidebar.svg";
+import iconShowSidebar from "/public/images/icon-show-sidebar.svg";
 import logoDark from "/public/images/logo-dark.svg";
 import logoLight from "/public/images/logo-light.svg";
-import iconShowSidebar from "/public/images/icon-show-sidebar.svg";
-import { useSidebarProvider } from "@/app/hooks/useSidebarProvider";
 
 const Sidebar = () => {
   const { isVisible, showSidebar, hideSidebar } = useSidebarProvider();
@@ -24,7 +24,7 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={`bg-white dark:bg-dark-grey h-full border-r border-lines-light dark:border-lines-dark transition-[margin] duration-500 ${
+        className={`bg-white dark:bg-dark-grey w-[300px] h-full border-r border-lines-light dark:border-lines-dark transition-[margin] duration-500 ${
           isVisible ? "ml-0" : "ml-[-300px]"
         }`}
         ref={ref}

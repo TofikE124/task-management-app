@@ -1,8 +1,7 @@
-import React, { PropsWithChildren } from "react";
-import DropdownTitle from "./DropdownTitle";
 import DropdownContainer from "./DropdownContainer";
 import DropdownElements from "./DropdownElements";
 import DropdownOption, { Option } from "./DropdownOption";
+import DropdownTitle from "./DropdownTitle";
 import DropdownTrigger from "./DropdownTrigger";
 
 interface Props {
@@ -26,7 +25,9 @@ const Dropdown = ({
         {options.map((option, index) => (
           <Dropdown.Option
             key={index}
-            defaultOption={defaultOption ? option == defaultOption : index == 0}
+            defaultOption={
+              defaultOption ? option.value == defaultOption.value : index == 0
+            }
             option={option}
           ></Dropdown.Option>
         ))}

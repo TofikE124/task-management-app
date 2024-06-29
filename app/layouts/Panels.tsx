@@ -1,12 +1,14 @@
 import React from "react";
 import NewBoardPanel from "../components/panels/NewBoardPanel";
-import NewTaskPanel from "../components/panels/NewTaskPanel";
+import TaskFormPanel from "../components/panels/TaskFormPanel";
+import TaskDetailsPanel from "../components/panels/TaskDetailsPanel";
 
 const Panels = () => {
   return (
     <>
       <NewBoardPanel></NewBoardPanel>
-      <NewTaskPanel></NewTaskPanel>
+      <TaskDetailsPanel></TaskDetailsPanel>
+      <TaskFormPanel></TaskFormPanel>
     </>
   );
 };

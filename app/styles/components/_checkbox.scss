@@ -30,6 +30,7 @@
 
   input:checked ~ p {
     text-decoration: line-through;
+    @apply text-medium-grey;
   }
 
   .checkmark {
@@ -65,6 +66,10 @@
     @apply bg-very-dark-grey;
     p {
       @apply text-white;
+    }
+
+    .checkmark {
+      @apply bg-dark-grey;
     }
 
     &:hover {

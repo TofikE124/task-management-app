@@ -5,6 +5,7 @@ import {
   BoardSummary,
   ColumnType,
   TaskType,
+  Subtask,
 } from "../types/taskTypes";
 import { loadFromLocalStorage, saveToLocalStorage } from "./storageService";
 
@@ -143,9 +144,40 @@ export const createTask = (
     const board = findBoard(boards, boardId);
     if (!board) return;
 
-    const column = findColumn(board.columns, task.status);
+    const column = findColumn(board.columns, task.columnId);
     column?.tasks.push(task);
 
+    updateAppData({ boards });
+  }
+};
+
+export const editTask = (
+  boardId: string,
+  taskId: string,
+  oldColumnId: string,
+  newTask: TaskType,
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    if (!board) return;
+
+    const oldColumn = board.columns.find((col) => col.id == oldColumnId);
+    const newColumn = findColumn(board.columns, newTask.columnId);
+    if (!newColumn || !oldColumn) return;
+    if (oldColumn == newColumn)
+      newColumn.tasks = newColumn?.tasks.map((task) =>
+        task.id == taskId ? newTask : task
+      );
+    else {
+      oldColumn.tasks.splice(
+        oldColumn.tasks.findIndex((task) => task.id == taskId),
+        1
+      );
+      newColumn.tasks.push(newTask);
+    }
     updateAppData({ boards });
   }
 };
@@ -172,11 +204,38 @@ export const moveTask = (
 
     column.tasks = column.tasks.filter((task) => task != taskToMove);
     const index = newColumn.tasks.findIndex((task) => task.id == beforeId);
+    taskToMove.columnId = newColumn.id;
     if (beforeId == "-1") {
       newColumn.tasks = [...newColumn.tasks, taskToMove];
     } else {
       newColumn.tasks.splice(index, 0, taskToMove);
     }
+
+    updateAppData({ boards });
+  }
+};
+
+export const checkSubtask = (
+  boardId: string,
+  columnId: string,
+  taskID: string,
+  subtaskId: string,
+  value: boolean,
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    if (!board) return;
+    const column = findColumn(board.columns, columnId);
+    if (!column) return;
+    const task = findTask(column.tasks, taskID);
+    if (!task) return;
+    task.subtasks = task?.subtasks.map((sub) =>
+      sub.id == subtaskId ? { ...sub, checked: value } : sub
+    );
+
     updateAppData({ boards });
   }
 };
@@ -190,10 +249,50 @@ const findBoard = (boards: BoardType[], boardId: string) => {
   return boards.find((board) => board.id == boardId);
 };
 
-const findColumn = (columns: ColumnType[], columnId: string) => {
+export const findColumn = (columns: ColumnType[], columnId: string) => {
   return columns.find((col) => col.id == columnId);
 };
 
 const findTask = (tasks: TaskType[], taskId: string) => {
   return tasks.find((task) => task.id == taskId);
+};
+
+export const getTask = (
+  boardId: string,
+  taskId: string,
+  userId?: string
+): TaskType | null => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+
+    const board = findBoard(boards, boardId);
+    if (!board) return null;
+
+    for (const column of board.columns) {
+      const task = findTask(column.tasks, taskId);
+      if (task) return task;
+    }
+  }
+  return null;
+};
+
+export const getCheckedTasks = (subtasks: Subtask[]) => {
+  return subtasks.reduce((sum, sub) => sum + (sub.checked ? 1 : 0), 0);
+};
+
+// Helper functions
+export const fromColToOption = (col: ColumnType) => ({
+  value: col.id,
+  label: col.title,
+});
+
+export const fromColIdToOption = (columns: ColumnType[], colId: string) => {
+  const col = findColumn(columns, colId);
+  if (!col) return;
+  return fromColToOption(col);
+};
+
+export const getStatusArr = (currentBoard: BoardType | null) => {
+  return currentBoard?.columns.map(fromColToOption) || [];
 };

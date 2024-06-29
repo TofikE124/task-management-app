@@ -3,12 +3,13 @@ import useCurrentBoard from "../hooks/useCurrentBoard";
 import { ColumnType, TaskType } from "../types/taskTypes";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
-import { deleteTask, moveTask } from "../services/taskService";
+import { deleteTask, getCheckedTasks, moveTask } from "../services/taskService";
 import { motion } from "framer-motion";
 import { Button, MotionButton } from "./Button";
 import { usePanel } from "../contexts/PanelProvider";
 import { PANELS } from "../constatnts/panels";
 import { useTaskData } from "../hooks/useTaskData";
+import TaskFormPanel from "./panels/TaskFormPanel";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
@@ -159,10 +160,19 @@ interface TaskProps {
   handleDragStart: (e: any, task: TaskType) => void;
 }
 const Task = ({ task, columnId, handleDragStart }: TaskProps) => {
+  const { openPanel } = usePanel();
+  const { updateTaskData } = useTaskData();
+
+  const handleClick = () => {
+    updateTaskData({ activeTask: task });
+    openPanel(PANELS.TASK_DETAILS_PANEL);
+  };
+
   return (
     <>
       <DropIndicator beforeId={task.id} columnId={columnId}></DropIndicator>
       <motion.div
+        onClick={handleClick}
         layout
         layoutId={task.id}
         draggable="true"
@@ -170,7 +180,9 @@ const Task = ({ task, columnId, handleDragStart }: TaskProps) => {
         onDragStart={(e) => handleDragStart(e, task)}
       >
         <h3 className="heading-m text-black dark:text-white">{task.title}</h3>
-        <p className="text-medium-grey">0 of {task.subtasks.length} subtasks</p>
+        <p className="text-medium-grey">
+          {getCheckedTasks(task.subtasks)} of {task.subtasks.length} subtasks
+        </p>
       </motion.div>
     </>
   );
@@ -248,7 +260,7 @@ const AddTask = ({ column }: AddTaskProps) => {
 
   const handleClick = () => {
     updateTaskData({ activeColumn: column });
-    openPanel(PANELS.NEW_TASK_PANEL);
+    openPanel(PANELS.TASK_FORM_PANEL);
   };
 
   return (

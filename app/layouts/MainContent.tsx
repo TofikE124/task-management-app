@@ -8,7 +8,7 @@ const MainContent = ({ children }: PropsWithChildren) => {
   return (
     <div
       className={`flex flex-col w-full col-end-3 transition-[width] duration-500  ${
-        isVisible ? "w-[calc(100vw-300px)]" : "w-screen"
+        isVisible ? "max-w-[calc(100vw-300px)]" : "w-screen"
       }`}
     >
       {children}
