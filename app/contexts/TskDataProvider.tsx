@@ -1,10 +1,11 @@
 "use client";
 import { createContext, PropsWithChildren, useState } from "react";
-import { ColumnType, TaskType } from "../types/taskTypes";
+import { BoardType, ColumnType, TaskType } from "../types/taskTypes";
 
 interface TaskData {
   activeColumn?: ColumnType;
   activeTask?: TaskType;
+  activeBoard: BoardType;
 }
 
 interface TaskDataType {

@@ -85,12 +85,32 @@ export const createBoard = async (
   } else {
     const data = loadFromLocalStorage() || { boards: [] };
     data.boards.push(newBoard);
-    saveToLocalStorage(data);
     addedBoard = newBoard;
-    appDataSubject.next(data); // Update appDataSubject with new data
+    updateAppData(data);
   }
 
   return addedBoard;
+};
+
+export const editBoard = async (editedBoard: BoardType, userId?: string) => {
+  if (userId) {
+    // Placeholder for future database interaction
+  } else {
+    const data = loadFromLocalStorage();
+    data.boards = data.boards.map((board) =>
+      board.id == editedBoard.id ? editedBoard : board
+    );
+    updateAppData(data);
+  }
+};
+
+export const deleteBoard = async (boardId: string, userId?: string) => {
+  if (userId) {
+  } else {
+    const app = loadFromLocalStorage();
+    app.boards = app.boards.filter((board) => board.id != boardId);
+    updateAppData(app);
+  }
 };
 
 // Function to get the ID of the first board in the list

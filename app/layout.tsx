@@ -5,7 +5,7 @@ import ThemeWrapper from "./components/ThemeWrapper";
 import { PanelProvider } from "./contexts/PanelProvider";
 import SidebarProvider from "./contexts/SidebarProvider";
 import "./globals.scss";
-import { TaskDataProvider } from "./contexts/TaskDataContext";
+import { TaskDataProvider } from "./contexts/TskDataProvider";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],

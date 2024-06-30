@@ -1,5 +1,5 @@
 import Icon from "@/app/components/Icon";
-import NewBoardPanel from "@/app/components/panels/NewBoardPanel";
+import BoardFormPanel from "@/app/components/panels/BoardFormPanel";
 import { PANELS } from "@/app/constatnts/panels";
 import { usePanel } from "@/app/contexts/PanelProvider";
 
@@ -8,7 +8,7 @@ const SidebarCreateNewBoard = () => {
   return (
     <>
       <div
-        onClick={() => openPanel(PANELS.NEW_BOARD_PANEL)}
+        onClick={() => openPanel(PANELS.BoardFormPanel)}
         className="relative cursor-pointer group select-none"
       >
         <div className="flex gap-4 py-4 relative z-20">

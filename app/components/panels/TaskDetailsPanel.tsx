@@ -1,7 +1,7 @@
 import { PANELS } from "@/app/constatnts/panels";
-import Panel from "../Panel";
-import { useTaskData } from "@/app/hooks/useTaskData";
 import { usePanel } from "@/app/contexts/PanelProvider";
+import useCurrentBoard from "@/app/hooks/useCurrentBoard";
+import { useTaskData } from "@/app/hooks/useTaskData";
 import {
   checkSubtask,
   fromColIdToOption,
@@ -12,12 +12,11 @@ import {
 } from "@/app/services/taskService";
 import Checkbox from "../Checkbox";
 import Dropdown from "../Dropdown/Dropdown";
-import useCurrentBoard from "@/app/hooks/useCurrentBoard";
-import Image from "next/image";
+import Panel from "../Panel";
 
-import VerticalEllipsis from "/public/images/icon-vertical-ellipsis.svg";
-import { useEffect, useRef, useState } from "react";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
+import { useEffect, useRef, useState } from "react";
+import VerticalEllipsisPanel from "../VerticalEllipsesPanel";
 
 const TaskDetailsPanel = () => {
   const { isPanelOpen } = usePanel();
@@ -96,73 +95,22 @@ const TaskDetailsPanel = () => {
 
 const TaskMoreOptions = () => {
   const { openPanel } = usePanel();
-  const [isVisible, setIsVisible] = useState(false);
-
-  const optionsRef = useRef<HTMLDivElement>(null);
 
   const handleEdit = () => {
     openPanel(PANELS.TASK_FORM_PANEL);
-    setIsVisible(false);
   };
 
   const handleDelete = () => {
     openPanel(PANELS.DELETE_TASK_PANEL);
-    setIsVisible(false);
   };
 
-  useOnPanelClose(PANELS.TASK_DETAILS_PANEL, () => setIsVisible(false));
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        optionsRef.current &&
-        !optionsRef.current.contains(event.target as HTMLDivElement)
-      ) {
-        setIsVisible(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [optionsRef]);
-
   return (
-    <div className="relative" ref={optionsRef}>
-      <div
-        className="cursor-pointer pl-2 select-none"
-        onClick={() => setIsVisible((v) => !v)}
-      >
-        <Image
-          width={4.5}
-          height={20}
-          alt="Vertical Ellipsis"
-          src={VerticalEllipsis}
-        />
-      </div>
-      <div
-        className={`absolute  top-[100%] left-0 mt-6 bg-white dark:bg-very-dark-grey p-4 w-[200px] shadow-[0px_10px_20px_0px_rgba(54,78,126,0.25)] rounded-lg transition-all duration-300 origin-top-left ${
-          isVisible
-            ? "opacity-1 visible scale-100 translate-y-0"
-            : "opacity-0 invisible scale-50 -translate-y-1"
-        }`}
-      >
-        <p
-          onClick={handleEdit}
-          className="body-l text-medium-grey mb-4 text-nowrap hover:underline cursor-pointer"
-        >
-          Edit Task
-        </p>
-        <p
-          onClick={handleDelete}
-          className="body-l text-red text-nowrap hover:underline cursor-pointer"
-        >
-          Delete Task
-        </p>
-      </div>
-    </div>
+    <VerticalEllipsisPanel
+      onFirstOptionClick={handleEdit}
+      onSecondOptionClick={handleDelete}
+      firstOptionText="Edit Task"
+      secondOptionText="Delete Task"
+    ></VerticalEllipsisPanel>
   );
 };
 

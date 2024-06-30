@@ -1,6 +1,5 @@
-import React, { PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 import { useSidebarProvider } from "../hooks/useSidebarProvider";
-import { motion } from "framer-motion";
 
 const MainContent = ({ children }: PropsWithChildren) => {
   const { isVisible } = useSidebarProvider();

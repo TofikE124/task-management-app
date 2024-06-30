@@ -1,9 +1,8 @@
-import Image from "next/image";
-import useCurrentBoard from "../hooks/useCurrentBoard";
-import dotsIcon from "/public/images/icon-vertical-ellipsis.svg";
 import { Button } from "../components/Button";
-import { usePanel } from "../contexts/PanelProvider";
+import VerticalEllipsisPanel from "../components/VerticalEllipsesPanel";
 import { PANELS } from "../constatnts/panels";
+import { usePanel } from "../contexts/PanelProvider";
+import useCurrentBoard from "../hooks/useCurrentBoard";
 import { useTaskData } from "../hooks/useTaskData";
 
 const PageHeader = () => {
@@ -15,12 +14,9 @@ const PageHeader = () => {
         <h2 className="heading-xl text-black dark:text-white">
           {currentBoard?.title}
         </h2>
-
         <div className="flex items-center gap-5">
           <AddTask></AddTask>
-          <div className="cursor-pointer px-[6px] select-none">
-            <Image src={dotsIcon} width={4} height={20} alt="Dots icon" />
-          </div>
+          <PageHeaderMoreOptions></PageHeaderMoreOptions>
         </div>
       </div>
     </div>
@@ -44,6 +40,31 @@ const AddTask = () => {
     >
       + Add New Task
     </Button>
+  );
+};
+
+const PageHeaderMoreOptions = () => {
+  const { currentBoard } = useCurrentBoard();
+  const { openPanel } = usePanel();
+  const { updateTaskData } = useTaskData();
+  const handleEdit = () => {
+    if (!currentBoard) return;
+    updateTaskData({ activeBoard: currentBoard });
+    openPanel(PANELS.BOARD_FORM_PANEL);
+  };
+
+  const handleDelete = () => {
+    openPanel(PANELS.DELETE_BOARD_PANEL);
+  };
+
+  return (
+    <VerticalEllipsisPanel
+      firstOptionText="Edit Board"
+      secondOptionText="Delete Board"
+      onFirstOptionClick={handleEdit}
+      onSecondOptionClick={handleDelete}
+      className="translate-x-[calc(-100%+20px)] origin-top-right mt-6"
+    ></VerticalEllipsisPanel>
   );
 };
 
