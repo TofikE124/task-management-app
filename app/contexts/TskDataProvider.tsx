@@ -5,7 +5,7 @@ import { BoardType, ColumnType, TaskType } from "../types/taskTypes";
 interface TaskData {
   activeColumn?: ColumnType;
   activeTask?: TaskType;
-  activeBoard: BoardType;
+  activeBoard?: BoardType;
 }
 
 interface TaskDataType {

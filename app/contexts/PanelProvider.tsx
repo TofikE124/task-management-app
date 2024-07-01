@@ -27,7 +27,7 @@ const PanelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const isPanelOpen = (name: string) => {
-    return !!openPanels[name];
+    return openPanels[name];
   };
 
   return (

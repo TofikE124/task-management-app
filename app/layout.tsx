@@ -6,6 +6,8 @@ import { PanelProvider } from "./contexts/PanelProvider";
 import SidebarProvider from "./contexts/SidebarProvider";
 import "./globals.scss";
 import { TaskDataProvider } from "./contexts/TskDataProvider";
+import QuickActionSidebarProvider from "./contexts/QuickActionSidebarProvider";
+import AddColumnProvider from "./contexts/AddColumnProvider";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -28,9 +30,13 @@ export default function RootLayout({
         <ThemeProvider>
           <PanelProvider>
             <SidebarProvider>
-              <TaskDataProvider>
-                <ThemeWrapper>{children}</ThemeWrapper>
-              </TaskDataProvider>
+              <QuickActionSidebarProvider>
+                <TaskDataProvider>
+                  <AddColumnProvider>
+                    <ThemeWrapper>{children}</ThemeWrapper>
+                  </AddColumnProvider>
+                </TaskDataProvider>
+              </QuickActionSidebarProvider>
             </SidebarProvider>
           </PanelProvider>
         </ThemeProvider>

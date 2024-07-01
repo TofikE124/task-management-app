@@ -8,7 +8,7 @@ const SidebarCreateNewBoard = () => {
   return (
     <>
       <div
-        onClick={() => openPanel(PANELS.BoardFormPanel)}
+        onClick={() => openPanel(PANELS.BOARD_FORM_PANEL)}
         className="relative cursor-pointer group select-none"
       >
         <div className="flex gap-4 py-4 relative z-20">

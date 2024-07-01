@@ -26,7 +26,7 @@ const getColumn = (columns: ColumnType[], columnId: string) => {
 type boardSchemaType = z.infer<typeof boardSchema>;
 
 const BoardFormPanel = () => {
-  const { taskData } = useTaskData();
+  const { taskData, updateTaskData } = useTaskData();
   const activeBoard = taskData?.activeBoard;
   const { closePanel, isPanelOpen } = usePanel();
 
@@ -120,6 +120,13 @@ const BoardFormPanel = () => {
         []
     );
   }, [activeBoard]);
+
+  const resetPanel = () => {
+    updateTaskData({});
+    reset();
+  };
+
+  useOnPanelClose(PANELS.BOARD_FORM_PANEL, resetPanel);
 
   return (
     <FormProvider {...methods}>

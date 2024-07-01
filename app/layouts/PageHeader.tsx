@@ -64,6 +64,7 @@ const PageHeaderMoreOptions = () => {
       onFirstOptionClick={handleEdit}
       onSecondOptionClick={handleDelete}
       className="translate-x-[calc(-100%+20px)] origin-top-right mt-6"
+      disabled={!currentBoard}
     ></VerticalEllipsisPanel>
   );
 };

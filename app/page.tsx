@@ -1,4 +1,5 @@
 "use client";
+import QuickActionSidebar from "./components/QuickActionSidebar/QuickActionSidebar";
 import TaskColumns from "./components/TaskColumns";
 import MainContent from "./layouts/MainContent";
 import PageHeader from "./layouts/PageHeader";
@@ -16,6 +17,7 @@ export default function Home() {
         <PageHeader></PageHeader>
         <TaskColumns></TaskColumns>
         <Panels></Panels>
+        <QuickActionSidebar></QuickActionSidebar>
       </MainContent>
     </div>
   );

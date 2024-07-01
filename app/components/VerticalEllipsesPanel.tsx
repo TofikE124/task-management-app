@@ -12,6 +12,7 @@ interface VerticalEllipsisPanelProps {
   firstOptionColor?: string;
   secondOptionColor?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 const VerticalEllipsisPanel: React.FC<VerticalEllipsisPanelProps> = ({
@@ -22,6 +23,7 @@ const VerticalEllipsisPanel: React.FC<VerticalEllipsisPanelProps> = ({
   className,
   firstOptionColor = "text-medium-grey",
   secondOptionColor = "text-red",
+  disabled = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -55,7 +57,8 @@ const VerticalEllipsisPanel: React.FC<VerticalEllipsisPanelProps> = ({
 
   return (
     <div className="relative" ref={optionsRef}>
-      <div
+      <button
+        disabled={disabled}
         className="cursor-pointer pl-2 select-none"
         onClick={() => setIsVisible((v) => !v)}
       >
@@ -65,10 +68,10 @@ const VerticalEllipsisPanel: React.FC<VerticalEllipsisPanelProps> = ({
           alt="Vertical Ellipsis"
           src={verticalEllipsisIcon}
         />
-      </div>
+      </button>
       <div
         className={twMerge(
-          `absolute  top-[100%] left-0 mt-6 bg-white dark:bg-very-dark-grey p-4 w-[200px] shadow-[0px_10px_20px_0px_rgba(54,78,126,0.25)] rounded-lg transition-all duration-300 origin-top-left ${
+          `absolute  z-50 top-[100%] left-0 mt-6 bg-white dark:bg-very-dark-grey p-4 w-[200px] shadow-[0px_10px_20px_0px_rgba(54,78,126,0.25)] rounded-lg transition-all duration-300 origin-top-left ${
             isVisible
               ? "opacity-1 visible scale-100 translate-y-0"
               : "opacity-0 invisible scale-50 -translate-y-1"

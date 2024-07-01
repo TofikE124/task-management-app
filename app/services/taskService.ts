@@ -235,6 +235,35 @@ export const moveTask = (
   }
 };
 
+export const addColumn = (
+  boardId: string,
+  newColumn: ColumnType,
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    board?.columns.unshift(newColumn);
+    updateAppData({ boards });
+  }
+};
+
+export const reorderColumns = (
+  boardId: string,
+  newColumns: ColumnType[],
+  userId?: string
+) => {
+  if (userId) {
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+    if (!board) return;
+    board.columns = newColumns;
+    updateAppData({ boards });
+  }
+};
+
 export const checkSubtask = (
   boardId: string,
   columnId: string,
@@ -315,4 +344,19 @@ export const fromColIdToOption = (columns: ColumnType[], colId: string) => {
 
 export const getStatusArr = (currentBoard: BoardType | null) => {
   return currentBoard?.columns.map(fromColToOption) || [];
+};
+
+export const checkIfColumnExists = async (
+  boardId: string,
+  columnTitle: string,
+  userId?: string
+) => {
+  if (userId) {
+    return false;
+  } else {
+    const { boards } = loadFromLocalStorage();
+    const board = findBoard(boards, boardId);
+
+    return !board?.columns.every((col) => col.title != columnTitle);
+  }
 };
