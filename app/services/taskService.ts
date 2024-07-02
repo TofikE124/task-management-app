@@ -249,17 +249,31 @@ export const addColumn = (
   }
 };
 
-export const reorderColumns = (
+export const swapColumns = (
   boardId: string,
-  newColumns: ColumnType[],
+  column1Id: string,
+  column2Id: string,
   userId?: string
 ) => {
   if (userId) {
+    // Handle user-specific case if needed
   } else {
     const { boards } = loadFromLocalStorage();
     const board = findBoard(boards, boardId);
     if (!board) return;
-    board.columns = newColumns;
+
+    const column1Index = board.columns.findIndex((col) => col.id === column1Id);
+    const column2Index = board.columns.findIndex((col) => col.id === column2Id);
+
+    if (column1Index === -1 || column2Index === -1) return;
+
+    // Swap the columns
+    [board.columns[column1Index], board.columns[column2Index]] = [
+      board.columns[column2Index],
+      board.columns[column1Index],
+    ];
+
+    // Save the updated board back to localStorage or handle as needed
     updateAppData({ boards });
   }
 };

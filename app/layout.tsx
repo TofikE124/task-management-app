@@ -8,6 +8,7 @@ import "./globals.scss";
 import { TaskDataProvider } from "./contexts/TskDataProvider";
 import QuickActionSidebarProvider from "./contexts/QuickActionSidebarProvider";
 import AddColumnProvider from "./contexts/AddColumnProvider";
+import DragProvider from "./contexts/DragProvider";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -33,7 +34,9 @@ export default function RootLayout({
               <QuickActionSidebarProvider>
                 <TaskDataProvider>
                   <AddColumnProvider>
-                    <ThemeWrapper>{children}</ThemeWrapper>
+                    <DragProvider>
+                      <ThemeWrapper>{children}</ThemeWrapper>
+                    </DragProvider>
                   </AddColumnProvider>
                 </TaskDataProvider>
               </QuickActionSidebarProvider>

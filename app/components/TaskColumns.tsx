@@ -1,19 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AnimatePresence,
-  motion,
-  Reorder,
-  useDragControls,
-  useMotionValue,
-} from "framer-motion";
-import React, {
-  forwardRef,
-  LegacyRef,
-  RefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
@@ -22,6 +9,7 @@ import { z } from "zod";
 import { PANELS } from "../constatnts/panels";
 import { QuickActionItems } from "../constatnts/QuickActionItems";
 import { usePanel } from "../contexts/PanelProvider";
+import { useAddColumnContext } from "../hooks/useAddColumnContext";
 import useCurrentBoard from "../hooks/useCurrentBoard";
 import useIntersectionObserver from "../hooks/useIntersectionObserver";
 import { useQuickActionSidebarProvider } from "../hooks/useQuickActionSidebarProvider";
@@ -32,13 +20,15 @@ import {
   checkIfColumnExists,
   getCheckedTasks,
   moveTask,
-  reorderColumns,
+  swapColumns,
 } from "../services/taskService";
 import { ColumnType, TaskType } from "../types/taskTypes";
 import { Button, MotionButton } from "./Button";
+import DraggableItem from "./draggableList/DraggableItem";
+import DraggableList from "./draggableList/DraggableList";
+import DropIndicator from "./draggableList/DropIndicator";
 import TextField from "./TextField";
-import { useAddColumnContext } from "../hooks/useAddColumnContext";
-import { setEnvironmentData } from "worker_threads";
+import useEdgeScroll from "../hooks/useEdgeScroll";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
@@ -57,65 +47,49 @@ interface ColumnProps {
 
 const Columns = ({ columns }: { columns: ColumnType[] }) => {
   const { currentBoardId } = useCurrentBoard();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const [startX, setStartX] = useState(0);
-  const [currentX, setCurrentX] = useState(0);
-
-  const handleDragOverOver = (e: MouseEvent) => {
-    e.preventDefault();
-
-    // Get the width of the viewport
-    const viewportWidth = window.innerWidth;
-
-    // Get the current position of the cursor relative to the viewport
-    const cursorX = e.clientX;
-    setCurrentX(cursorX);
-
-    const target = e.target as HTMLDivElement;
-
-    // target.style.transform = `translateX(${cursorX - e.offsetX}px)`;
-
-    // Define the edge threshold (e.g., 100 pixels from the right edge)
-    const rightEdgeThreshold = viewportWidth - 20;
-    const leftEdgeThreshold = containerRef.current?.offsetLeft || 0;
-
-    // Check if the cursor is near the right edge
-    if (cursorX >= rightEdgeThreshold) {
-      containerRef.current?.scrollBy({ left: 20 });
-    } else if (cursorX <= leftEdgeThreshold + 40) {
-      containerRef.current?.scrollBy({ left: -20 });
-    }
+  const handleDragStart = (e: React.DragEvent, column: ColumnType) => {
+    e.dataTransfer.setData("columnId", column.id);
+  };
+  const handleDrop = (e: React.DragEvent, beforeId: string) => {
+    const columnId = e.dataTransfer.getData("columnId");
+    if (!columnId) return;
+    swapColumns(currentBoardId || "", columnId, beforeId);
   };
 
+  const containerRef = useEdgeScroll();
+
   return (
-    <Reorder.Group
+    <div
       ref={containerRef}
       className="h-full w-full overflow-x-scroll overflow-y-hidden flex gap-6 pl-6 pt-6 pb-12 pr-[50px]"
-      values={columns}
-      onReorder={(newColumns) => {
-        reorderColumns(currentBoardId || "", newColumns);
-      }}
-      axis="x"
     >
-      {columns.map((column) => (
-        <Reorder.Item
-          draggable
-          value={column}
-          key={column.id}
-          onDrag={handleDragOverOver}
-          onDragStart={(e: MouseEvent) => setStartX(e.clientX)}
-          onDragEnd={() => {
-            setStartX(0);
-            setCurrentX(0);
-          }}
-        >
-          <Column column={column}></Column>
-        </Reorder.Item>
-      ))}
+      <DraggableList
+        containerName="app"
+        containerId="app"
+        gap="16px"
+        activeClass={false}
+        onDrop={(e: React.DragEvent, before) => {
+          handleDrop(e, before);
+        }}
+      >
+        {columns.map((column) => (
+          <DraggableItem
+            containerName="app"
+            containerId="app"
+            beforeId={column.id}
+            key={column.id}
+            handleDragStart={(e: React.DragEvent) => {
+              handleDragStart(e, column);
+            }}
+          >
+            <Column column={column} key={column.id}></Column>
+          </DraggableItem>
+        ))}
+      </DraggableList>
+
       <AddColumn />
       <BurnBarrel></BurnBarrel>
-    </Reorder.Group>
+    </div>
   );
 };
 
@@ -167,87 +141,26 @@ const AddColumn = () => {
 };
 
 const Column = ({ column }: ColumnProps) => {
-  const [active, setActive] = useState(false);
   const { currentBoardId } = useCurrentBoard();
 
-  const dragControls = useDragControls();
-
   const handleDragStart = (e: React.DragEvent, task: TaskType) => {
+    e.stopPropagation();
     e.dataTransfer.setData("boardId", currentBoardId || "");
     e.dataTransfer.setData("columnId", column.id);
     e.dataTransfer.setData("taskId", task.id);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    clearHighlights();
-    setActive(false);
-
+  const handleDrop = (e: React.DragEvent, before: string) => {
     const boardId = e.dataTransfer.getData("boardId");
     const columnId = e.dataTransfer.getData("columnId");
     const taskId = e.dataTransfer.getData("taskId");
 
-    const indicators = getIndicators();
-    const { element } = getNearestIndicator(e, indicators);
-
-    const before = element.dataset.before || "-1";
-
     moveTask(boardId, columnId, column.id, taskId, before);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    hightlightIndicator(e);
-    setActive(true);
-  };
-
-  const hightlightIndicator = (e: React.DragEvent) => {
-    const indicators = getIndicators();
-    clearHighlights();
-    const el = getNearestIndicator(e, indicators) as any;
-    el.element.style.opacity = "1";
-  };
-
-  const clearHighlights = (els?: any[]) => {
-    const indicators = els || getIndicators();
-
-    indicators.forEach((i) => (i.style.opacity = "0"));
-  };
-
-  const getIndicators = () => {
-    return Array.from(
-      document.querySelectorAll(`[data-column-id="${column.id}"]`)
-    );
-  };
-
-  const getNearestIndicator = (e: React.DragEvent, indicators: Element[]) => {
-    const DISTANCE_OFFSET = 50;
-
-    const el = indicators.reduce(
-      (closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = e.clientY - (box.top + DISTANCE_OFFSET);
-
-        if (offset < 0 && offset > closest.offset) {
-          return { offset, element: child };
-        }
-        return closest;
-      },
-      {
-        offset: Number.NEGATIVE_INFINITY,
-        element: indicators[indicators.length - 1],
-      }
-    );
-    return el as any;
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    clearHighlights();
-    setActive(false);
   };
 
   return (
     <AnimatePresence>
-      <motion.div className="min-w-[280px] h-full flex flex-col cursor-grab focus:active:cursor-grabbing">
+      <motion.div className="select-none min-w-[280px] z-50 h-full flex flex-col cursor-grab focus:active:cursor-grabbing">
         <div className="flex items-center gap-3">
           <div
             className="w-4 h-4 rounded-full"
@@ -257,27 +170,30 @@ const Column = ({ column }: ColumnProps) => {
             {column.title}
           </h4>
         </div>
-        <div
-          className={`my-6 transition-colors h-full ${
-            active
-              ? "bg-medium-grey/10 shadow-medium-grey/15 dark:bg-slate-grey/15 shadow-[0px_4px_10px] dark:shadow-slate-grey/20"
-              : "bg-neutral-800/0"
-          } grow `}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
+        <DraggableList
+          containerName="column"
+          containerId={column.id}
           onDrop={handleDrop}
+          axis="y"
         >
           {column.tasks.map((task) => (
-            <Task
-              handleDragStart={handleDragStart}
-              task={task}
+            <DraggableItem
+              containerName="column"
+              handleDragStart={(e) => handleDragStart(e, task)}
               key={task.id}
-              columnId={column.id}
-            ></Task>
+              beforeId={task.id}
+              containerId={column.id}
+            >
+              <Task task={task}></Task>
+            </DraggableItem>
           ))}
-          <DropIndicator beforeId="-1" columnId={column.id}></DropIndicator>
+          <DropIndicator
+            containerName="column"
+            beforeId="-1"
+            containerId={column.id}
+          ></DropIndicator>
           <AddTask column={column}></AddTask>
-        </div>
+        </DraggableList>
       </motion.div>
     </AnimatePresence>
   );
@@ -285,10 +201,8 @@ const Column = ({ column }: ColumnProps) => {
 
 interface TaskProps {
   task: TaskType;
-  columnId: string;
-  handleDragStart: (e: any, task: TaskType) => void;
 }
-const Task = ({ task, columnId, handleDragStart }: TaskProps) => {
+const Task = ({ task }: TaskProps) => {
   const { openPanel } = usePanel();
   const { updateTaskData } = useTaskData();
 
@@ -299,14 +213,9 @@ const Task = ({ task, columnId, handleDragStart }: TaskProps) => {
 
   return (
     <>
-      <DropIndicator beforeId={task.id} columnId={columnId}></DropIndicator>
       <motion.div
         onClick={handleClick}
-        layout
-        layoutId={task.id}
-        draggable="true"
-        className="py-6 px-4 rounded-lg space-y-2 bg-white dark:bg-dark-grey cursor-grab active:cursor-grabbing focus:cursor-grabbing select-none"
-        onDragStart={(e) => handleDragStart(e, task)}
+        className="py-6 px-4 rounded-lg space-y-2 bg-white dark:bg-dark-grey pointer-events-none"
       >
         <h3 className="heading-m text-black dark:text-white">{task.title}</h3>
         <p className="text-medium-grey">
@@ -314,25 +223,6 @@ const Task = ({ task, columnId, handleDragStart }: TaskProps) => {
         </p>
       </motion.div>
     </>
-  );
-};
-
-interface DropIndicatorProps {
-  beforeId: string;
-  columnId: string;
-}
-const DropIndicator = ({ beforeId, columnId }: DropIndicatorProps) => {
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  return (
-    <div
-      onDragOver={handleDragOver}
-      data-before={beforeId}
-      data-column-id={columnId}
-      className="my-0.5 h-0.5 w-full bg-main-purple opacity-0"
-    ></div>
   );
 };
 
