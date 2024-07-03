@@ -37,7 +37,7 @@ const TaskDetailsPanel = () => {
   useOnPanelClose(PANELS.TASK_DETAILS_PANEL, resetPanel);
 
   return (
-    <Panel name={PANELS.TASK_DETAILS_PANEL}>
+    <Panel name={PANELS.TASK_DETAILS_PANEL} className="w-[480px]">
       <div className="space-y-6">
         <div className="flex items-center gap-6 justify-between">
           <h2 className="heading-l text-black dark:text-white">

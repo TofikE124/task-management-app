@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { usePanel } from "../contexts/PanelProvider";
+import { twMerge } from "tailwind-merge";
 interface PanelProps {
   name: string;
-  children: React.ReactNode;
+  children?: ReactNode;
+  className?: string;
 }
 
-const Panel = ({ children, name }: PanelProps) => {
+const Panel = ({ children, name, className }: PanelProps) => {
   const { isPanelOpen, closePanel } = usePanel();
 
   return (
@@ -15,9 +17,12 @@ const Panel = ({ children, name }: PanelProps) => {
       }`}
     >
       <div
-        className={`relative z-30 bg-white dark:bg-dark-grey p-8 rounded-md w-[480px] transition-transform duration-300 ${
-          isPanelOpen(name) ? "scale-100" : "scale-0"
-        }`}
+        className={twMerge(
+          `relative z-30 bg-white dark:bg-dark-grey p-8 w-[480px] rounded-md max-w-[480px] transition-transform duration-300 ${
+            isPanelOpen(name) ? "scale-100" : "scale-0"
+          }`,
+          className
+        )}
       >
         {children}
       </div>

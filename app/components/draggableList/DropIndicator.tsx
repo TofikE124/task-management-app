@@ -28,6 +28,7 @@ const DropIndicator = ({
       onDragOver={handleDragOver}
       data-before={beforeId}
       data-container-name={containerName}
+      data-type="dropIndicator"
       className="my-0.5 h-0.5 w-full bg-main-purple opacity-0"
     ></div>
   );

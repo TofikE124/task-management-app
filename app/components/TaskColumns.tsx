@@ -18,6 +18,8 @@ import { columnSchema } from "../schemas/columnSchema";
 import {
   addColumn,
   checkIfColumnExists,
+  deleteColumn,
+  deleteTask,
   getCheckedTasks,
   moveTask,
   swapColumns,
@@ -48,7 +50,9 @@ interface ColumnProps {
 const Columns = ({ columns }: { columns: ColumnType[] }) => {
   const { currentBoardId } = useCurrentBoard();
   const handleDragStart = (e: React.DragEvent, column: ColumnType) => {
+    e.dataTransfer.setData("type", "column");
     e.dataTransfer.setData("columnId", column.id);
+    e.dataTransfer.setData("boardId", currentBoardId || "");
   };
   const handleDrop = (e: React.DragEvent, beforeId: string) => {
     const columnId = e.dataTransfer.getData("columnId");
@@ -56,7 +60,7 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
     swapColumns(currentBoardId || "", columnId, beforeId);
   };
 
-  const containerRef = useEdgeScroll();
+  const containerRef = useEdgeScroll({ containerName: ["wrapper", "column"] });
 
   return (
     <div
@@ -64,8 +68,8 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
       className="h-full w-full overflow-x-scroll overflow-y-hidden flex gap-6 pl-6 pt-6 pb-12 pr-[50px]"
     >
       <DraggableList
-        containerName="app"
-        containerId="app"
+        containerName="wrapper"
+        containerId="wrapper"
         gap="16px"
         activeClass={false}
         onDrop={(e: React.DragEvent, before) => {
@@ -74,8 +78,8 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
       >
         {columns.map((column) => (
           <DraggableItem
-            containerName="app"
-            containerId="app"
+            containerName="wrapper"
+            containerId="wrapper"
             beforeId={column.id}
             key={column.id}
             handleDragStart={(e: React.DragEvent) => {
@@ -145,6 +149,7 @@ const Column = ({ column }: ColumnProps) => {
 
   const handleDragStart = (e: React.DragEvent, task: TaskType) => {
     e.stopPropagation();
+    e.dataTransfer.setData("type", "task");
     e.dataTransfer.setData("boardId", currentBoardId || "");
     e.dataTransfer.setData("columnId", column.id);
     e.dataTransfer.setData("taskId", task.id);
@@ -215,7 +220,7 @@ const Task = ({ task }: TaskProps) => {
     <>
       <motion.div
         onClick={handleClick}
-        className="py-6 px-4 rounded-lg space-y-2 bg-white dark:bg-dark-grey pointer-events-none"
+        className="py-6 px-4 rounded-lg space-y-2 bg-white dark:bg-dark-grey"
       >
         <h3 className="heading-m text-black dark:text-white">{task.title}</h3>
         <p className="text-medium-grey">
@@ -239,6 +244,18 @@ const BurnBarrel = () => {
   };
 
   const handleDrop = (e: React.DragEvent) => {
+    const type = e.dataTransfer.getData("type");
+    if (type == "task") {
+      const boardId = e.dataTransfer.getData("boardId");
+      const columnId = e.dataTransfer.getData("columnId");
+      const taskId = e.dataTransfer.getData("taskId");
+      deleteTask(boardId, columnId, taskId);
+    } else if (type == "column") {
+      const boardId = e.dataTransfer.getData("boardId");
+      const columnId = e.dataTransfer.getData("columnId");
+      deleteColumn(boardId, columnId);
+    }
+
     setActive(false);
   };
 
@@ -255,11 +272,12 @@ const BurnBarrel = () => {
   }, [isVisible]);
 
   return (
-    <div
+    <motion.div
       ref={ref as LegacyRef<HTMLDivElement>}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      layout
       className={`grid size-56 shrink-0 place-content-center rounded border text-3xl ${
         active
           ? "border-red bg-red/50 text-white dark:text-red-hover"
@@ -271,19 +289,9 @@ const BurnBarrel = () => {
       ) : (
         <FiTrash></FiTrash>
       )}
-    </div>
+    </motion.div>
   );
 };
-
-interface BurnBarrelSmallProps {
-  isVisible: boolean;
-  active: boolean;
-  handleDragOver: (e: React.DragEvent) => void;
-  handleDragLeave: (e: React.DragEvent) => void;
-  handleDrop: (e: React.DragEvent) => void;
-  handleMouseEnter: () => void;
-  handleMouseLeave: () => void;
-}
 
 interface AddTaskProps {
   column: ColumnType;
@@ -342,10 +350,9 @@ const BoardEmpty = () => {
       <AnimatePresence>
         {isFormVisible ? (
           <ColumnForm
-            key="form"
-            onCancel={() => setIsFormVisible(false)}
             onAdd={() => setIsFormVisible(false)}
-          />
+            onCancel={() => setIsFormVisible(false)}
+          ></ColumnForm>
         ) : (
           <motion.div
             initial={{ scale: 0 }}
@@ -422,16 +429,20 @@ const ColumnForm = ({
   return (
     <motion.div
       key="column-form"
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
+      initial={{
+        scale: 0,
+        top: "50%",
+        left: "50%",
+        translate: "-50% -50%",
+      }}
+      animate={{ scale: 1, translate: "0% 0%", top: 0, left: 0 }}
       transition={{ duration: disableAnimation ? 0 : 0.25 }}
-      exit={{ scale: 0 }}
-      layout
-      className="absolute top-0 left-0 h-full min-w-[280px]"
+      exit={{ scale: 0, top: "50%", left: "50%", translate: "-50% -50%" }}
+      className="absolute top-0 left-0 h-[200px]"
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="  flex flex-col w-full bg-white dark:bg-dark-grey h-fit p-3 rounded-lg space-y-4"
+        className="flex flex-col w-full bg-white dark:bg-dark-grey h-fit p-3 rounded-lg space-y-4"
       >
         <TextField
           placeholder="e.g Todo"

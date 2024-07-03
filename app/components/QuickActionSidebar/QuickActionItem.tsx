@@ -77,6 +77,7 @@ const QuickActionItem = ({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={onClick}
+          data-no-scroll
         >
           <AnimatePresence>
             {isActive(name) ? (

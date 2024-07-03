@@ -37,7 +37,6 @@ const DraggableList = ({
     const { element } = getNearestIndicator(e, indicators);
 
     const before = element.dataset.before || "-1";
-
     onDrop(e, before);
   };
 
@@ -53,10 +52,8 @@ const DraggableList = ({
 
   const hightlightIndicator = (e: React.DragEvent) => {
     const indicators = getIndicators();
-    console.log(indicators);
     clearHighlights();
     const el = getNearestIndicator(e, indicators) as any;
-    if (!el) return;
     el.element.style.opacity = "1";
   };
 
@@ -68,7 +65,9 @@ const DraggableList = ({
 
   const getIndicators = () => {
     return Array.from(
-      document.querySelectorAll(`[data-${containerName}-id="${containerId}"]`)
+      document.querySelectorAll(
+        `[data-${containerName}-id="${containerId}"][data-type="dropIndicator"]`
+      )
     );
   };
 
@@ -104,7 +103,7 @@ const DraggableList = ({
 
   return (
     <div
-      className={`my-6 transition-colors h-full ${
+      className={`transition-colors h-full ${
         axis == "x" ? "flex" : "flex flex-col"
       } ${
         activeClass
@@ -112,7 +111,7 @@ const DraggableList = ({
             ? "bg-medium-grey/10 shadow-medium-grey/15 dark:bg-slate-grey/15 shadow-[0px_4px_10px] dark:shadow-slate-grey/20"
             : "bg-neutral-800/0"
           : ""
-      } grow `}
+      } `}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

@@ -26,7 +26,7 @@ const DeleteTaskPanel = () => {
   };
 
   return (
-    <Panel name={PANELS.DELETE_TASK_PANEL}>
+    <Panel name={PANELS.DELETE_TASK_PANEL} className="w-[400px]">
       <div className="bg-white dark:bg-dark-grey rounded-md flex flex-col gap-6">
         <h2 className="heading-l text-red">Delete this task?</h2>
         <p className="text-medium-grey body-l">

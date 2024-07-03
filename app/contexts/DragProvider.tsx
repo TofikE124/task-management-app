@@ -1,9 +1,15 @@
 "use client";
-import React, { createContext, PropsWithChildren, useState } from "react";
+import React, {
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from "react";
 
 type DragProviderType = {
   draggedItemContainerName: string | null;
   updateDraggedItemContainerName: (name: string) => void;
+  isDragging: boolean;
 };
 
 export const DragContext = createContext<DragProviderType | null>(null);
@@ -16,9 +22,29 @@ const DragProvider = ({ children }: PropsWithChildren) => {
   const updateDraggedItemContainerName = (name: string) => {
     setDraggedItemContainerName(name);
   };
+
+  useEffect(() => {
+    const handleDragOver = () => setIsDragging(true);
+    const handleDrop = () => setIsDragging(false);
+
+    window.addEventListener("dragover", handleDragOver);
+    window.addEventListener("drop", handleDrop);
+
+    return () => {
+      window.removeEventListener("dragover", handleDragOver);
+      window.removeEventListener("drop", handleDrop);
+    };
+  }, []);
+
+  const [isDragging, setIsDragging] = useState(false);
+
   return (
     <DragContext.Provider
-      value={{ draggedItemContainerName, updateDraggedItemContainerName }}
+      value={{
+        draggedItemContainerName,
+        updateDraggedItemContainerName,
+        isDragging,
+      }}
     >
       {children}
     </DragContext.Provider>
