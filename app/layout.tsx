@@ -9,6 +9,9 @@ import { TaskDataProvider } from "./contexts/TskDataProvider";
 import QuickActionSidebarProvider from "./contexts/QuickActionSidebarProvider";
 import AddColumnProvider from "./contexts/AddColumnProvider";
 import DragProvider from "./contexts/DragProvider";
+import DeleteProvider from "./contexts/deleteProvider";
+import Providers from "./components/Providers";
+import NextAuthSession from "./components/NextAuthSession";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -28,21 +31,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={plus_jakarta_sans.className}>
-        <ThemeProvider>
-          <PanelProvider>
-            <SidebarProvider>
-              <QuickActionSidebarProvider>
-                <TaskDataProvider>
-                  <AddColumnProvider>
-                    <DragProvider>
-                      <ThemeWrapper>{children}</ThemeWrapper>
-                    </DragProvider>
-                  </AddColumnProvider>
-                </TaskDataProvider>
-              </QuickActionSidebarProvider>
-            </SidebarProvider>
-          </PanelProvider>
-        </ThemeProvider>
+        <Providers>
+          <NextAuthSession></NextAuthSession>
+          <ThemeWrapper>{children}</ThemeWrapper>
+        </Providers>
       </body>
     </html>
   );

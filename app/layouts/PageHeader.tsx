@@ -9,7 +9,7 @@ const PageHeader = () => {
   const { currentBoard } = useCurrentBoard();
 
   return (
-    <div className="bg-white dark:bg-dark-grey border-b border-lines-light dark:border-lines-dark">
+    <div className="bg-white dark:bg-dark-grey border-b border-lines-light dark:border-lines-dark w-full">
       <div className="flex items-center justify-between py-5 px-6 w-full">
         <h2 className="heading-xl text-black dark:text-white">
           {currentBoard?.title}

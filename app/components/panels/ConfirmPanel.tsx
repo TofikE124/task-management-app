@@ -1,31 +1,36 @@
 import { PANELS } from "@/app/constatnts/panels";
-import React from "react";
-import { Button } from "../Button";
+import { DELETE_TYPE, useDeleteContext } from "@/app/contexts/deleteProvider";
 import Panel from "../Panel";
-import useCurrentBoard from "@/app/hooks/useCurrentBoard";
+import { Button } from "../Button";
 import { usePanel } from "@/app/contexts/PanelProvider";
-import { deleteBoard } from "@/app/services/appDataService";
 
-const DeleteBoardPanel = () => {
+const ConfirmPanel = () => {
   const { closePanel } = usePanel();
-  const { currentBoard, currentBoardId } = useCurrentBoard();
+  const { action, deleteItem } = useDeleteContext();
 
-  const handleDelete = () => {
-    deleteBoard(currentBoardId || "");
-    closePanel(PANELS.DELETE_BOARD_PANEL);
+  const deleteSequel: Record<DELETE_TYPE, string> = {
+    Board: "all columns and tasks",
+    Column: "all tasks",
+    Task: "all the subtasks",
   };
 
+  const handleDelete = () => {
+    deleteItem();
+    closePanel(PANELS.CONFIRM_PANEL);
+  };
   const handleCancel = () => {
-    closePanel(PANELS.DELETE_BOARD_PANEL);
+    closePanel(PANELS.CONFIRM_PANEL);
   };
 
   return (
-    <Panel name={PANELS.DELETE_BOARD_PANEL}>
+    <Panel name={PANELS.CONFIRM_PANEL}>
       <div className="bg-white dark:bg-dark-grey rounded-md flex flex-col gap-6">
-        <h2 className="heading-l text-red">Delete this board?</h2>
+        <h2 className="heading-l text-red">
+          Are you sure you want to delete this {action?.type}?
+        </h2>
         <p className="text-medium-grey body-l">
-          Are you sure you want to delete the ‘{currentBoard?.title}’ board?
-          This action will remove all columns and tasks and cannot be reversed.
+          Are you sure you want to delete the {action?.type}? This action will
+          remove {deleteSequel[action?.type!]} and cannot be reversed.
         </p>
         <div className="flex gap-4 items-center">
           <Button
@@ -50,4 +55,4 @@ const DeleteBoardPanel = () => {
   );
 };
 
-export default DeleteBoardPanel;
+export default ConfirmPanel;

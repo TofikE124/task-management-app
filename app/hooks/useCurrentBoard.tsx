@@ -2,10 +2,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   boards$,
-  getCurrentBoardId,
   getFirstBoardId,
   saveCurrentBoardId,
-} from "../services/taskService";
+} from "../services/appDataService";
 import { BoardType } from "../types/taskTypes";
 
 const useCurrentBoard = () => {
@@ -13,35 +12,48 @@ const useCurrentBoard = () => {
   const searchParams = useSearchParams();
   const [currentBoardId, setCurrentBoardId] = useState<string | null>(null);
   const [currentBoard, setCurrentBoard] = useState<BoardType | null>(null);
+  const [boards, setBoards] = useState<BoardType[]>([]);
 
   const setBoardToFirst = () => {
     const firstBoardId = getFirstBoardId();
     if (firstBoardId) {
-      navigateToBoard(firstBoardId);
-    } else setCurrentBoardId(null);
+      {
+        setCurrentBoardId(firstBoardId);
+        navigateToBoard(firstBoardId);
+      }
+    } else {
+      setCurrentBoardId(null);
+      navigateToBoard(null);
+    }
   };
 
   useEffect(() => {
-    if (!currentBoardId) {
+    const subscription = boards$.subscribe((boards) => setBoards(boards));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!currentBoardId && !boards.length) {
       setCurrentBoard(null);
-      return;
-    }
-    boards$.subscribe((boards) => {
+    } else {
       const board = boards.find((board) => board.id == currentBoardId)!;
       if (!board) setBoardToFirst();
       else setCurrentBoard(board);
-    });
-  }, [currentBoardId]);
+    }
+  }, [currentBoardId, boards]);
 
   useEffect(() => {
     const boardId = searchParams.get("currentBoardId");
-    if (boardId) setCurrentBoardId(boardId);
-    else setBoardToFirst();
+    setCurrentBoardId(boardId);
   }, [searchParams]);
 
-  const navigateToBoard = (boardId: string) => {
-    router.push(`/?currentBoardId=${boardId}`);
-    saveCurrentBoardId(boardId);
+  const navigateToBoard = (boardId: string | null) => {
+    if (boardId) {
+      router.push(`/?currentBoardId=${boardId}`);
+      saveCurrentBoardId(boardId);
+    } else {
+      router.push(`/`);
+    }
   };
 
   return { currentBoardId, currentBoard, navigateToBoard };

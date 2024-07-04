@@ -1,22 +1,31 @@
-import React from "react";
-import QuickActionItem from "../QuickActionItem";
+import { PANELS } from "@/app/constatnts/panels";
 import { QuickActionItems } from "@/app/constatnts/QuickActionItems";
+import { usePanel } from "@/app/contexts/PanelProvider";
+import React from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
-import { deleteColumn, deleteTask } from "@/app/services/taskService";
+import QuickActionItem from "../QuickActionItem";
+import { DELETE_TYPE, useDeleteContext } from "@/app/contexts/deleteProvider";
 
 const BurnBarrelQuickAction = () => {
+  const { updateAction } = useDeleteContext();
+  const { openPanel } = usePanel();
+
   const handleDrop = (e: React.DragEvent) => {
+    openPanel(PANELS.CONFIRM_PANEL);
     const type = e.dataTransfer.getData("type");
     if (type == "task") {
       const boardId = e.dataTransfer.getData("boardId");
       const columnId = e.dataTransfer.getData("columnId");
       const taskId = e.dataTransfer.getData("taskId");
-      deleteTask(boardId, columnId, taskId);
+      updateAction({ boardId, columnId, taskId, type: DELETE_TYPE.TASK });
     } else if (type == "column") {
       const boardId = e.dataTransfer.getData("boardId");
       const columnId = e.dataTransfer.getData("columnId");
-      deleteColumn(boardId, columnId);
+      updateAction({ boardId, columnId, type: DELETE_TYPE.COLUMN });
+    } else if (type == "board") {
+      const boardId = e.dataTransfer.getData("boardId");
+      updateAction({ boardId, type: DELETE_TYPE.BOARD });
     }
   };
 

@@ -4,7 +4,7 @@ import { PANELS } from "@/app/constatnts/panels";
 import { useTaskData } from "@/app/hooks/useTaskData";
 import { Button } from "../Button";
 import { usePanel } from "@/app/contexts/PanelProvider";
-import { deleteTask } from "@/app/services/taskService";
+import { deleteTask } from "@/app/services/appDataService";
 import useCurrentBoard from "@/app/hooks/useCurrentBoard";
 
 const DeleteTaskPanel = () => {

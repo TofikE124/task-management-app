@@ -16,22 +16,24 @@ const Textarea = forwardRef(
     ref
   ) => {
     return (
-      <div
-        className={`flex w-full items-center border rounded-[4px] py-2 px-4 ${
-          errorMessage ? "border-red" : "border-medium-grey-25"
-        }`}
-      >
-        <textarea
-          className={twMerge(
-            `bg-white dark:bg-dark-grey outline-none grow  ${
-              errorMessage ? "text-red" : "text-black dark:text-white"
-            }`,
-            className
-          )}
-          placeholder={placeholder}
-          ref={ref as LegacyRef<HTMLTextAreaElement>}
-          {...props}
-        />
+      <div className="space-y-1">
+        <div
+          className={`border rounded-[4px] py-2 px-4 ${
+            errorMessage ? "border-red" : "border-medium-grey-25 "
+          }`}
+        >
+          <textarea
+            className={twMerge(
+              `bg-white dark:bg-dark-grey outline-none w-full  ${
+                errorMessage ? "text-red" : "text-black dark:text-white"
+              }`,
+              className
+            )}
+            placeholder={placeholder}
+            ref={ref as LegacyRef<HTMLTextAreaElement>}
+            {...props}
+          />
+        </div>
         <p className="body-l text-red">{errorMessage}</p>
       </div>
     );

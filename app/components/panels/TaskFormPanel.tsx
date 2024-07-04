@@ -17,7 +17,7 @@ import {
   fromColIdToOption,
   fromColToOption,
   getStatusArr,
-} from "@/app/services/taskService";
+} from "@/app/services/appDataService";
 
 import { Button } from "../Button";
 import Dropdown from "../Dropdown/Dropdown";

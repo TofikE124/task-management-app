@@ -1,5 +1,6 @@
 import { useDrag } from "@/app/hooks/useDrag";
 import React, { ReactNode, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 interface DraggableListProps {
   containerId: string;
@@ -11,6 +12,7 @@ interface DraggableListProps {
   gap?: string;
   activeClass?: boolean;
   containerName: string;
+  className?: string;
 }
 
 const DraggableList = ({
@@ -23,6 +25,7 @@ const DraggableList = ({
   axis = "x",
   gap = "0px",
   activeClass = true,
+  className,
 }: DraggableListProps) => {
   const { draggedItemContainerName } = useDrag();
   const [active, setActive] = useState(false);
@@ -103,15 +106,16 @@ const DraggableList = ({
 
   return (
     <div
-      className={`transition-colors h-full ${
-        axis == "x" ? "flex" : "flex flex-col"
-      } ${
-        activeClass
-          ? active
-            ? "bg-medium-grey/10 shadow-medium-grey/15 dark:bg-slate-grey/15 shadow-[0px_4px_10px] dark:shadow-slate-grey/20"
-            : "bg-neutral-800/0"
-          : ""
-      } `}
+      className={twMerge(
+        `transition-colors h-full ${axis == "x" ? "flex" : "flex flex-col"} ${
+          activeClass
+            ? active
+              ? "bg-medium-grey/10 shadow-medium-grey/15 dark:bg-slate-grey/15 shadow-[0px_4px_10px] dark:shadow-slate-grey/20"
+              : "bg-neutral-800/0"
+            : ""
+        }`,
+        className
+      )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

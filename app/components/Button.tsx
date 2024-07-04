@@ -31,7 +31,9 @@ const buttonStyles = cva(
   }
 );
 
-type ButtonProps = VariantProps<typeof buttonStyles> &
+export type ButtonVaraiants = VariantProps<typeof buttonStyles>;
+
+type ButtonProps = ButtonVaraiants &
   ComponentProps<"button"> & { isMotion?: boolean };
 
 export const Button = ({

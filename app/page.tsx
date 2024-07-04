@@ -4,12 +4,9 @@ import TaskColumns from "./components/TaskColumns";
 import MainContent from "./layouts/MainContent";
 import PageHeader from "./layouts/PageHeader";
 import Panels from "./layouts/Panels";
-import Sidebar from "./layouts/sidebar/Sidebar";
-import { initializeApp } from "./services/taskService";
+import Sidebar from "./layouts/Sidebar";
 
 export default function Home() {
-  initializeApp();
-
   return (
     <div className="h-screen w-screen overflow-x-scroll flex bg-light-grey dark:bg-very-dark-grey">
       <Sidebar></Sidebar>

@@ -3,17 +3,14 @@ import { usePanel } from "@/app/contexts/PanelProvider";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
 import { useTaskData } from "@/app/hooks/useTaskData";
 import { boardSchema } from "@/app/schemas/boardSchema";
-import {
-  createBoard,
-  editBoard,
-  fetchBoards,
-} from "@/app/services/taskService";
-import { BoardType, ColumnType, TaskType } from "@/app/types/taskTypes";
+import { boards$, createBoard, editBoard } from "@/app/services/appDataService";
+import { BoardType, ColumnType } from "@/app/types/taskTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { take } from "rxjs";
 import { v4 } from "uuid";
-import { isValid, z } from "zod";
+import { z } from "zod";
 import { Button } from "../Button";
 import Panel from "../Panel";
 import TextField from "../TextField";
@@ -57,12 +54,12 @@ const BoardFormPanel = () => {
   };
 
   const handleCreateBoard = (data: boardSchemaType) => {
-    fetchBoards().then((boards) => {
-      if (!boards.every((board) => board.title != data.name)) {
+    validateBoardName(data.name).then((isValid) => {
+      if (!isValid)
         setError("name", {
           message: `Board with the name "${data.name}" already exists`,
         });
-      } else {
+      else {
         const newBoard: BoardType = {
           id: v4(),
           title: data.name,
@@ -80,7 +77,7 @@ const BoardFormPanel = () => {
   };
 
   const handleEditBoard = (data: boardSchemaType) => {
-    validateEdit(data).then((isValid) => {
+    validateBoardName(data.name).then((isValid) => {
       if (isValid) {
         const editedBoard: BoardType = {
           id: activeBoard?.id!,
@@ -105,11 +102,11 @@ const BoardFormPanel = () => {
     });
   };
 
-  const validateEdit = async (data: boardSchemaType) => {
-    if (data.name == activeBoard?.title) return true;
-    return fetchBoards().then((boards) =>
-      boards.every((board) => board.title != data.name)
-    );
+  const validateBoardName = async (boardName: string) => {
+    if (boardName == activeBoard?.title) return true;
+    return boards$
+      .pipe(take(1))
+      .subscribe((boards) => boards.every((board) => board.title != boardName));
   };
 
   useEffect(() => {

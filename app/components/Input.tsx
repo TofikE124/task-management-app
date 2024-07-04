@@ -9,19 +9,21 @@ const Input = forwardRef(
     ref
   ) => {
     return (
-      <div
-        className={`flex w-full items-center border rounded-[4px] py-2 px-4 ${
-          errorMessage ? "border-red" : "border-medium-grey-25"
-        }`}
-      >
-        <input
-          className={` bg-white dark:bg-dark-grey outline-none grow ${
-            errorMessage ? "text-red" : "text-black dark:text-white"
+      <div className="space-y-1">
+        <div
+          className={`py-2 px-4 border rounded-[4px]  ${
+            errorMessage ? "border-red" : "border-medium-grey-25"
           }`}
-          placeholder={placeholder}
-          ref={ref as LegacyRef<HTMLInputElement>}
-          {...props}
-        />
+        >
+          <input
+            className={` bg-white dark:bg-dark-grey outline-none w-full ${
+              errorMessage ? "text-red" : "text-black dark:text-white"
+            }`}
+            placeholder={placeholder}
+            ref={ref as LegacyRef<HTMLInputElement>}
+            {...props}
+          />
+        </div>
         <p className="body-l text-red">{errorMessage}</p>
       </div>
     );

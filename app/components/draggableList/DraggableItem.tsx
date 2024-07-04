@@ -7,7 +7,7 @@ interface DraggableItemProps {
   containerName: string;
   containerId: string;
   beforeId: string;
-  handleDragStart?: (e: any) => void;
+  onDragStart?: (e: any) => void;
   onClick?: () => void;
   children: ReactNode;
   className?: string;
@@ -16,20 +16,20 @@ const DraggableItem = ({
   containerName,
   beforeId,
   containerId,
-  handleDragStart = () => {},
+  onDragStart = () => {},
   onClick = () => {},
   children,
   className,
 }: DraggableItemProps) => {
   const { updateDraggedItemContainerName } = useDrag();
 
-  const onDragStart = (e: DragEvent) => {
+  const handleDragStart = (e: DragEvent) => {
     e.stopPropagation();
     if (!e.dataTransfer) return;
     updateDraggedItemContainerName(containerName);
     e.dataTransfer.setData(`containerName`, containerName);
     e.dataTransfer.effectAllowed = "move";
-    handleDragStart(e);
+    onDragStart(e);
   };
 
   return (
@@ -46,7 +46,7 @@ const DraggableItem = ({
         draggable="true"
         dragPropagation={false}
         className="cursor-grab h-full active:cursor-grabbing focus:cursor-grabbing select-none"
-        onDragStart={onDragStart}
+        onDragStart={handleDragStart}
         data-container-name={containerName}
       >
         {children}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { boardSummaries$ } from "../services/taskService";
+import { boardSummaries$ } from "../services/appDataService";
 import { BoardSummary } from "../types/taskTypes";
 
 const useBoardSummaries = () => {

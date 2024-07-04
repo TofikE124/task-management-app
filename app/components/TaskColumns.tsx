@@ -18,12 +18,13 @@ import { columnSchema } from "../schemas/columnSchema";
 import {
   addColumn,
   checkIfColumnExists,
+  deleteBoard,
   deleteColumn,
   deleteTask,
   getCheckedTasks,
   moveTask,
-  swapColumns,
-} from "../services/taskService";
+  moveColumn,
+} from "../services/appDataService";
 import { ColumnType, TaskType } from "../types/taskTypes";
 import { Button, MotionButton } from "./Button";
 import DraggableItem from "./draggableList/DraggableItem";
@@ -31,6 +32,7 @@ import DraggableList from "./draggableList/DraggableList";
 import DropIndicator from "./draggableList/DropIndicator";
 import TextField from "./TextField";
 import useEdgeScroll from "../hooks/useEdgeScroll";
+import { DELETE_TYPE, useDeleteContext } from "../contexts/deleteProvider";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
@@ -57,7 +59,7 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
   const handleDrop = (e: React.DragEvent, beforeId: string) => {
     const columnId = e.dataTransfer.getData("columnId");
     if (!columnId) return;
-    swapColumns(currentBoardId || "", columnId, beforeId);
+    moveColumn(currentBoardId || "", columnId, beforeId);
   };
 
   const containerRef = useEdgeScroll({ containerName: ["wrapper", "column"] });
@@ -82,7 +84,7 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
             containerId="wrapper"
             beforeId={column.id}
             key={column.id}
-            handleDragStart={(e: React.DragEvent) => {
+            onDragStart={(e: React.DragEvent) => {
               handleDragStart(e, column);
             }}
           >
@@ -184,7 +186,7 @@ const Column = ({ column }: ColumnProps) => {
           {column.tasks.map((task) => (
             <DraggableItem
               containerName="column"
-              handleDragStart={(e) => handleDragStart(e, task)}
+              onDragStart={(e) => handleDragStart(e, task)}
               key={task.id}
               beforeId={task.id}
               containerId={column.id}
@@ -232,6 +234,8 @@ const Task = ({ task }: TaskProps) => {
 };
 
 const BurnBarrel = () => {
+  const { openPanel } = usePanel();
+  const { updateAction } = useDeleteContext();
   const { showItem, hideItem } = useQuickActionSidebarProvider();
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.3,
@@ -244,16 +248,20 @@ const BurnBarrel = () => {
   };
 
   const handleDrop = (e: React.DragEvent) => {
+    openPanel(PANELS.CONFIRM_PANEL);
     const type = e.dataTransfer.getData("type");
     if (type == "task") {
       const boardId = e.dataTransfer.getData("boardId");
       const columnId = e.dataTransfer.getData("columnId");
       const taskId = e.dataTransfer.getData("taskId");
-      deleteTask(boardId, columnId, taskId);
+      updateAction({ boardId, columnId, taskId, type: DELETE_TYPE.TASK });
     } else if (type == "column") {
       const boardId = e.dataTransfer.getData("boardId");
       const columnId = e.dataTransfer.getData("columnId");
-      deleteColumn(boardId, columnId);
+      updateAction({ boardId, columnId, type: DELETE_TYPE.COLUMN });
+    } else if (type == "board") {
+      const boardId = e.dataTransfer.getData("boardId");
+      updateAction({ boardId, type: DELETE_TYPE.BOARD });
     }
 
     setActive(false);
@@ -343,16 +351,13 @@ const AppEmpty = () => {
   );
 };
 const BoardEmpty = () => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
+  const { isVisible, hide, show } = useAddColumnContext();
 
   return (
     <div className="h-full w-full relative ml-6 mt-6">
       <AnimatePresence>
-        {isFormVisible ? (
-          <ColumnForm
-            onAdd={() => setIsFormVisible(false)}
-            onCancel={() => setIsFormVisible(false)}
-          ></ColumnForm>
+        {isVisible ? (
+          <ColumnForm onAdd={hide} onCancel={hide}></ColumnForm>
         ) : (
           <motion.div
             initial={{ scale: 0 }}
@@ -370,7 +375,8 @@ const BoardEmpty = () => {
                 variant="primary"
                 size="lg"
                 className="mt-8"
-                onClick={() => setIsFormVisible(true)}
+                onClick={show}
+                type="button"
               >
                 + Add New Column
               </Button>

@@ -24,7 +24,10 @@ const DragProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    const handleDragOver = () => setIsDragging(true);
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDragging(true);
+    };
     const handleDrop = () => setIsDragging(false);
 
     window.addEventListener("dragover", handleDragOver);
