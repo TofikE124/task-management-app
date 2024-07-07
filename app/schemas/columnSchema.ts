@@ -7,4 +7,5 @@ export const columnSchema = z.object({
   title: z.string().min(1, "This field is required"),
   tasks: z.array(taskSchema).optional().default([]),
   boardId: z.string().optional(),
+  color: z.string().optional().default("#fff"),
 });

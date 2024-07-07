@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     data: {
       title: body.title,
       boardId: body.boardId!,
-      color: "#fff",
+      color: body.color,
       index: columns.length,
     },
   });

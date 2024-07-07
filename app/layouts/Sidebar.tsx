@@ -23,6 +23,12 @@ import { BoardSummary } from "@/app/types/taskTypes";
 import boardIcon from "/public/images/icon-board.svg";
 import { Button, ButtonVaraiants } from "../components/Button";
 import { signIn, signOut, useSession } from "next-auth/react";
+import LoadingSkeleton from "../components/LoadingSkeleton";
+import resolveConfig from "tailwindcss/resolveConfig";
+import tailwindConfig from "@/tailwind.config";
+import { useTheme } from "next-themes";
+import useMountStatus from "../hooks/useMountStatus";
+import { useLoading } from "../contexts/LoadingProvider";
 
 const Sidebar = () => {
   const { isVisible } = useSidebarProvider();
@@ -57,6 +63,7 @@ const Sidebar = () => {
 const BoardsList = () => {
   const { boardSummaries } = useBoardSummaries();
   const { currentBoardId, navigateToBoard } = useCurrentBoard();
+  const { loading } = useLoading();
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData("type", "board");
@@ -69,6 +76,8 @@ const BoardsList = () => {
     const boardId = e.dataTransfer.getData("boardId");
     moveBoard(boardId, before);
   };
+
+  if (loading) return <BoardsListLoading></BoardsListLoading>;
 
   return (
     <motion.div className="flex flex-col mt-5" layout>
@@ -104,6 +113,59 @@ const BoardsList = () => {
 
       <SidebarCreateNewBoard></SidebarCreateNewBoard>
     </motion.div>
+  );
+};
+
+const BoardsListLoading = () => {
+  return (
+    <div className="flex flex-col gap-2 mt-5 relative ml-[-64px]">
+      <BoardLoading></BoardLoading>
+      <BoardLoading2></BoardLoading2>
+      <BoardLoading2></BoardLoading2>
+      <BoardLoading2></BoardLoading2>
+      <BoardLoading2></BoardLoading2>
+    </div>
+  );
+};
+
+const BoardLoading = () => {
+  const { theme } = resolveConfig(tailwindConfig);
+  const colors = theme.colors as any;
+
+  return (
+    <LoadingSkeleton
+      width="calc(100%)"
+      height="48px"
+      borderRadius="100px"
+      containerClassName="h-[48px]"
+      baseColor={colors["main-purple"]}
+      highlightColor={colors["main-purple-highlight"]}
+      className="cursor-pointer"
+    ></LoadingSkeleton>
+  );
+};
+
+const BoardLoading2 = () => {
+  const { resolvedTheme } = useTheme();
+  const { theme } = resolveConfig(tailwindConfig);
+  const colors = theme.colors as any;
+
+  return (
+    <LoadingSkeleton
+      width="calc(100%)"
+      height="48px"
+      borderRadius="100px"
+      containerClassName="h-[48px]"
+      baseColor={
+        resolvedTheme == "dark" ? colors["charcoal-grey"] : colors["ghost"]
+      }
+      highlightColor={
+        resolvedTheme == "dark"
+          ? colors["charcoal-grey-highlight"]
+          : colors["ghost-highlight"]
+      }
+      className="cursor-pointer"
+    ></LoadingSkeleton>
   );
 };
 
@@ -210,6 +272,8 @@ const SidebarFooter = () => {
 
 const Authentication = () => {
   const session = useSession();
+  const { loading } = useLoading();
+
   const buttonMap: Record<
     "authenticated" | "unauthenticated" | "loading",
     { variant: ButtonVaraiants; text: string; onClick?: () => void }
@@ -232,10 +296,39 @@ const Authentication = () => {
 
   const button = buttonMap[session.status];
 
+  if (loading) return <AuthenticationLoading></AuthenticationLoading>;
+
   return (
     <Button onClick={button.onClick} {...button.variant}>
       {button.text}
     </Button>
+  );
+};
+
+const AuthenticationLoading = () => {
+  const { resolvedTheme } = useTheme();
+  const { theme } = resolveConfig(tailwindConfig);
+  const colors = theme.colors as any;
+
+  const mounted = useMountStatus();
+
+  return (
+    <LoadingSkeleton
+      key={mounted ? 1 : 0}
+      width="100%"
+      height="34px"
+      baseColor={`${
+        resolvedTheme == "dark"
+          ? colors["very-dark-grey"]
+          : colors["light-grey"]
+      }`}
+      highlightColor={`${
+        resolvedTheme == "dark"
+          ? colors["very-dark-grey-highlight"]
+          : colors["light-grey-highlight"]
+      }`}
+      borderRadius={6}
+    ></LoadingSkeleton>
   );
 };
 

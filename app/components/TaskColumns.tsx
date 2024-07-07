@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, color, motion } from "framer-motion";
 import React, { LegacyRef, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaFire } from "react-icons/fa";
@@ -23,22 +23,25 @@ import {
   moveColumn,
   moveTask,
 } from "../services/appDataService";
+import { checkIfColumnExists } from "../services/utilities";
 import { ColumnType, TaskType } from "../types/taskTypes";
 import { Button, MotionButton } from "./Button";
 import DraggableItem from "./draggableList/DraggableItem";
 import DraggableList from "./draggableList/DraggableList";
 import DropIndicator from "./draggableList/DropIndicator";
+import LoadingSkeleton from "./LoadingSkeleton";
 import TextField from "./TextField";
-import { checkIfColumnExists } from "../services/utilities";
 import { useLoading } from "../contexts/LoadingProvider";
 import { useTheme } from "next-themes";
+import resolveConfig from "tailwindcss/resolveConfig";
+import tailwindConfig from "@/tailwind.config";
+import useMountStatus from "../hooks/useMountStatus";
+import { getRandomColor } from "../utilities/colors";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
   const { loading } = useLoading();
-
-  if (loading) return <h1 className="text-xl text-white">Loading...</h1>;
-
+  if (loading) return <ColumnsLoading></ColumnsLoading>;
   if (!currentBoard) {
     return <AppEmpty></AppEmpty>;
   }
@@ -427,7 +430,7 @@ const ColumnForm = ({
       const newColumn: ColumnType = {
         id: v4(),
         title: data.title,
-        color: "#fff",
+        color: getRandomColor(),
         tasks: [],
         boardId: currentBoardId,
       };
@@ -479,3 +482,108 @@ const ColumnForm = ({
   );
 };
 export default TaskColumns;
+
+const ColumnsLoading = () => {
+  const mounted = useMountStatus();
+
+  return (
+    <div
+      key={mounted ? 0 : 1}
+      className="h-full w-full overflow-x-scroll overflow-y-hidden flex gap-6 pl-6 pt-6 pb-12 pr-[50px]"
+    >
+      <ColumnLoading count={2}></ColumnLoading>
+      <ColumnLoading count={3}></ColumnLoading>
+      <ColumnLoading count={1}></ColumnLoading>
+      <ColumnLoading count={2}></ColumnLoading>
+      <ColumnLoading count={1}></ColumnLoading>
+    </div>
+  );
+};
+
+interface ColumnLoadingProps {
+  count?: number;
+}
+
+const ColumnLoading = ({ count = 1 }: ColumnLoadingProps) => {
+  const arr = new Array(count);
+  arr.fill(0);
+  return (
+    <div className="flex flex-col gap-[2px] w-[280px]">
+      <ColumnHeaderLoading></ColumnHeaderLoading>
+      <div className="flex flex-col gap-1 relative mt-[2px]">
+        {arr.map((x, index) => (
+          <TaskLoading key={index}></TaskLoading>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ColumnHeaderLoading = () => {
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <LoadingSkeleton
+      width="100%"
+      height="18px"
+      baseColor={`${resolvedTheme == "dark" ? "#2B2C37" : "#fff"} `}
+      highlightColor={`${resolvedTheme == "dark" ? "#343641" : "#f9f9f9"} `}
+      containerClassName="h-[18px]"
+      className="cursor-pointer"
+    ></LoadingSkeleton>
+  );
+};
+
+const TaskLoading = () => {
+  const colors = resolveConfig(tailwindConfig).theme.colors as any;
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <div className="flex flex-col gap-2 py-6 px-4 relative h-[98.75px] w-[280px]">
+      <div className="absolute inset-0">
+        <LoadingSkeleton
+          height="98.75px"
+          borderRadius="8px"
+          baseColor={`${
+            resolvedTheme == "dark" ? colors["dark-grey"] : colors.white
+          } `}
+          highlightColor={`${
+            resolvedTheme == "dark"
+              ? colors["dark-grey-highlight"]
+              : colors["white-highlight"]
+          } `}
+          containerClassName="h-[98.75px]"
+          className="cursor-pointer"
+        ></LoadingSkeleton>
+      </div>
+      <LoadingSkeleton
+        width="100%"
+        height="20px"
+        borderRadius="8px"
+        baseColor={`${
+          resolvedTheme == "dark" ? colors["charcoal-grey"] : colors["ghost"]
+        } `}
+        highlightColor={`${
+          resolvedTheme == "dark"
+            ? colors["charcoal-grey-highlight"]
+            : colors["ghost-highlight"]
+        } `}
+        containerClassName="h-[20px]"
+      ></LoadingSkeleton>
+      <LoadingSkeleton
+        width="100%"
+        height="15px"
+        borderRadius="8px"
+        baseColor={`${
+          resolvedTheme == "dark" ? colors["charcoal-grey"] : colors["ghost"]
+        } `}
+        highlightColor={`${
+          resolvedTheme == "dark"
+            ? colors["charcoal-grey-highlight"]
+            : colors["ghost-highlight"]
+        } `}
+        containerClassName="h-[15px]"
+      ></LoadingSkeleton>
+    </div>
+  );
+};
