@@ -1,23 +1,67 @@
-// services/appDataService.ts
-
-import { BehaviorSubject, map } from "rxjs";
-import { DefaultSession, getServerSession } from "next-auth";
+import { SessionContextValue } from "next-auth/react";
+import { map } from "rxjs";
 import {
   AppData,
+  BoardSummary,
   BoardType,
   ColumnType,
-  TaskType,
   Subtask,
-  BoardSummary,
+  TaskType,
 } from "../types/taskTypes";
+import { AppDataApiService } from "./appDataApiService";
 import { LocalStorageService } from "./appDataLocalStorageService";
-import { ApiService } from "./appDataApiService";
-import { SessionContextValue, useSession } from "next-auth/react";
+import observableService from "./observableService";
+import { before } from "node:test";
 
 // Interface for data service
-interface IDataService {
+export interface IDataService {
   getAppData(): Promise<AppData>;
-  saveAppData(data: AppData): void;
+
+  // Board CRUD operations
+  createBoard(board: BoardType): Promise<BoardType | null>;
+  editBoard(board: BoardType): Promise<BoardType | null>;
+  deleteBoard(boardId: string): Promise<BoardType | null>;
+  moveBoard(boardId: string, beforeId: string): Promise<void>;
+
+  // Column CRUD operations
+  addColumn(boardId: string, column: ColumnType): Promise<ColumnType | null>;
+  editColumn(boardId: string, column: ColumnType): Promise<ColumnType | null>;
+  deleteColumn(boardId: string, columnId: string): Promise<ColumnType | null>;
+  moveColumn(
+    boardId: string,
+    column1Id: string,
+    beforeId: string
+  ): Promise<void>;
+
+  // Task CRUD operations
+  createTask(boardId: string, task: TaskType): Promise<TaskType | null>;
+  editTask(
+    boardId: string,
+    taskId: string,
+    oldColumnId: string,
+    newTask: TaskType
+  ): Promise<TaskType | null>;
+  deleteTask(
+    boardId: string,
+    columnId: string,
+    taskId: string
+  ): Promise<TaskType | null>;
+  moveTask(
+    boardId: string,
+    columnId: string,
+    newColumnId: string,
+    taskId: string,
+    beforeId: string
+  ): Promise<void>;
+
+  // Subtask operations
+  checkSubtask(
+    boardId: string,
+    columnId: string,
+    taskID: string,
+    subtaskId: string,
+    value: boolean
+  ): Promise<void>;
 }
 
 // Initialize the appropriate data service based on the user's session
@@ -26,31 +70,24 @@ let dataService: IDataService;
 export const initializeDataService = async (
   session: SessionContextValue | null
 ) => {
-  const id = "";
   if (session?.data?.user) {
-    dataService = new ApiService(id);
+    dataService = new AppDataApiService();
   } else {
     dataService = new LocalStorageService();
   }
 };
 
 // BehaviorSubject for app-wide state
-const appDataSubject = new BehaviorSubject<AppData>({ boards: [] });
-export const appData$ = appDataSubject.asObservable();
-
-// State Management Functions
-const updateAppData = (appData: AppData) => {
-  dataService.saveAppData(appData);
-  appDataSubject.next(appData);
-};
+export const appData$ = observableService.appData$;
 
 // Initialization Functions
-export const initializeApp = async (session: SessionContextValue | null) => {
-  console.log("init");
+export const initializeApp = async (
+  session: SessionContextValue | null
+): Promise<AppData> => {
   await initializeDataService(session);
-  console.log(dataService);
   const data = await dataService.getAppData();
-  appDataSubject.next(data);
+  observableService.updateAppData(data);
+  return data;
 };
 
 // Observable for boards
@@ -72,72 +109,124 @@ export const getBoardData = async (
 export const createBoard = async (
   newBoard: BoardType
 ): Promise<BoardType | null> => {
-  const data = await dataService.getAppData();
-  data.boards.push(newBoard);
-  updateAppData(data);
-  return newBoard;
+  try {
+    observableService.addBoard(newBoard);
+    const createdBoard = await dataService.createBoard(newBoard);
+    return createdBoard;
+  } catch (error) {
+    console.error("Error creating board:", error);
+    return null;
+  }
 };
 
-export const editBoard = async (editedBoard: BoardType) => {
-  const data = await dataService.getAppData();
-  data.boards = data.boards.map((board) =>
-    board.id == editedBoard.id ? editedBoard : board
-  );
-  updateAppData(data);
+export const editBoard = async (
+  editedBoard: BoardType
+): Promise<BoardType | null> => {
+  try {
+    observableService.updateBoard(editedBoard);
+    return await dataService.editBoard(editedBoard);
+  } catch (error) {
+    console.error("Error editing board", error);
+    return null;
+  }
 };
 
-export const deleteBoard = async (boardId: string) => {
-  const data = await dataService.getAppData();
-  data.boards = data.boards.filter((board) => board.id != boardId);
-  updateAppData(data);
+export const deleteBoard = async (
+  boardId: string
+): Promise<BoardType | null> => {
+  try {
+    observableService.deleteBoard(boardId);
+    return await dataService.deleteBoard(boardId);
+  } catch (error) {
+    console.error("Error deleting board: ", error);
+    return null;
+  }
+};
+
+export const moveBoard = async (
+  boardId: string,
+  before: string
+): Promise<void> => {
+  try {
+    observableService.moveBoard(boardId, before);
+
+    await dataService.moveBoard(boardId, before);
+  } catch (error) {
+    console.error("Error moving board :", error);
+  }
 };
 
 // Column Management Functions
-export const addColumn = async (boardId: string, newColumn: ColumnType) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  board?.columns.unshift(newColumn);
-  updateAppData(data);
+export const addColumn = async (
+  boardId: string,
+  newColumn: ColumnType
+): Promise<ColumnType | null> => {
+  try {
+    observableService.addColumn(boardId, newColumn);
+
+    const addedColumn = await dataService.addColumn(boardId, newColumn);
+    return addedColumn;
+  } catch (error) {
+    console.error("Error adding column: ", error);
+    return null;
+  }
 };
 
-export const deleteColumn = async (boardId: string, columnId: string) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
-  board.columns = board.columns.filter((col) => col.id !== columnId);
-  updateAppData(data);
+export const editColumn = async (
+  boardId: string,
+  editedColumn: ColumnType
+): Promise<ColumnType | null> => {
+  try {
+    observableService.updateColumn(boardId, editedColumn);
+
+    return await dataService.editColumn(boardId, editedColumn);
+  } catch (error) {
+    console.error("Error editing column: ", error);
+    return null;
+  }
+};
+
+export const deleteColumn = async (
+  boardId: string,
+  columnId: string
+): Promise<ColumnType | null> => {
+  try {
+    observableService.deleteColumn(boardId, columnId);
+
+    return await dataService.deleteColumn(boardId, columnId);
+  } catch (error) {
+    console.error("Error deleting column: ", error);
+    return null;
+  }
 };
 
 export const moveColumn = async (
   boardId: string,
-  column1Id: string,
+  columnId: string,
   beforeId: string
-) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
+): Promise<void> => {
+  try {
+    observableService.moveColumn(boardId, columnId, beforeId);
 
-  const { columns } = board;
-  const column1Index = columns.findIndex((col) => col.id === column1Id);
-  const column2Index =
-    beforeId == "-1"
-      ? columns.length
-      : columns.findIndex((col) => col.id === beforeId);
-
-  if (column1Index == -1 || column2Index == -1) return;
-  const [movedColumn] = columns.splice(column1Index, 1);
-  columns.splice(column2Index, 0, movedColumn);
-  updateAppData(data);
+    await dataService.moveColumn(boardId, columnId, beforeId);
+  } catch (error) {
+    console.error("Error moving column: ", error);
+  }
 };
 
 // Task Management Functions
-export const createTask = async (boardId: string, task: TaskType) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
-  const column = findColumn(board.columns, task.columnId);
-  column?.tasks.push(task);
-  updateAppData(data);
+export const createTask = async (
+  boardId: string,
+  task: TaskType
+): Promise<TaskType | null> => {
+  try {
+    observableService.addTask(boardId, task);
+
+    return await dataService.createTask(boardId, task);
+  } catch (error) {
+    console.error("Error creating task: ", error);
+    return null;
+  }
 };
 
 export const editTask = async (
@@ -145,39 +234,30 @@ export const editTask = async (
   taskId: string,
   oldColumnId: string,
   newTask: TaskType
-) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
-  const oldColumn = board.columns.find((col) => col.id == oldColumnId);
-  const newColumn = findColumn(board.columns, newTask.columnId);
-  if (!newColumn || !oldColumn) return;
-  if (oldColumn == newColumn) {
-    newColumn.tasks = newColumn?.tasks.map((task) =>
-      task.id == taskId ? newTask : task
-    );
-  } else {
-    oldColumn.tasks.splice(
-      oldColumn.tasks.findIndex((task) => task.id == taskId),
-      1
-    );
-    newColumn.tasks.push(newTask);
+): Promise<TaskType | null> => {
+  try {
+    observableService.updateTask(boardId, taskId, oldColumnId, newTask);
+
+    return await dataService.editTask(boardId, taskId, oldColumnId, newTask);
+  } catch (error) {
+    console.error("Error editing task: ", error);
+    return null;
   }
-  updateAppData(data);
 };
 
 export const deleteTask = async (
   boardId: string,
   columnId: string,
   taskId: string
-) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
-  const column = findColumn(board.columns, columnId);
-  if (!column) return;
-  column.tasks = column.tasks.filter((task) => task.id !== taskId);
-  updateAppData(data);
+): Promise<TaskType | null> => {
+  try {
+    observableService.deleteTask(boardId, columnId, taskId);
+
+    return await dataService.deleteTask(boardId, columnId, taskId);
+  } catch (error) {
+    console.error("Error deleting task: ", error);
+    return null;
+  }
 };
 
 export const moveTask = async (
@@ -186,44 +266,43 @@ export const moveTask = async (
   newColumnId: string,
   taskId: string,
   beforeId: string
-) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
-  const column = findColumn(board.columns, columnId);
-  const newColumn = findColumn(board.columns, newColumnId);
-  if (!column || !newColumn) return;
-  const taskToMove = findTask(column?.tasks, taskId);
-  if (!taskToMove) return;
-  column.tasks = column.tasks.filter((task) => task != taskToMove);
-  const index = newColumn.tasks.findIndex((task) => task.id == beforeId);
-  taskToMove.columnId = newColumn.id;
-  if (beforeId == "-1") {
-    newColumn.tasks = [...newColumn.tasks, taskToMove];
-  } else {
-    newColumn.tasks.splice(index, 0, taskToMove);
+): Promise<void> => {
+  try {
+    observableService.moveTask(
+      boardId,
+      columnId,
+      newColumnId,
+      taskId,
+      beforeId
+    );
+
+    await dataService.moveTask(
+      boardId,
+      columnId,
+      newColumnId,
+      taskId,
+      beforeId
+    );
+  } catch (error) {
+    console.error("Error moving task: ", error);
   }
-  updateAppData(data);
 };
 
+// Subtask Operations
 export const checkSubtask = async (
   boardId: string,
   columnId: string,
-  taskID: string,
+  taskId: string,
   subtaskId: string,
   value: boolean
-) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  if (!board) return;
-  const column = findColumn(board.columns, columnId);
-  if (!column) return;
-  const task = findTask(column.tasks, taskID);
-  if (!task) return;
-  task.subtasks = task?.subtasks.map((sub) =>
-    sub.id == subtaskId ? { ...sub, checked: value } : sub
-  );
-  updateAppData(data);
+): Promise<void> => {
+  try {
+    observableService.checkSubtask(boardId, columnId, taskId, subtaskId, value);
+
+    await dataService.checkSubtask(boardId, columnId, taskId, subtaskId, value);
+  } catch (error) {
+    console.error("Error checking subtask: ", error);
+  }
 };
 
 // Helper Functions
@@ -239,7 +318,7 @@ const findColumn = (columns: ColumnType[], columnId: string) => {
   return columns.find((col) => col.id == columnId);
 };
 
-const findTask = (tasks: TaskType[], taskId: string) => {
+export const findTask = (tasks: TaskType[], taskId: string) => {
   return tasks.find((task) => task.id == taskId);
 };
 
@@ -274,46 +353,4 @@ export const fromColIdToOption = (columns: ColumnType[], colId: string) => {
 
 export const getStatusArr = (currentBoard: BoardType | null) => {
   return currentBoard?.columns.map(fromColToOption) || [];
-};
-
-export const checkIfColumnExists = async (
-  boardId: string,
-  columnTitle: string
-) => {
-  const data = await dataService.getAppData();
-  const board = findBoard(data.boards, boardId);
-  return !board?.columns.every((col) => col.title != columnTitle);
-};
-
-// Local Storage Management
-const CURRENT_BOARD_ID_KEY = "currentBoardId";
-
-export const getCurrentBoardId = (): string | null => {
-  return localStorage.getItem(CURRENT_BOARD_ID_KEY);
-};
-
-export const saveCurrentBoardId = (currentBoardId: string) => {
-  localStorage.setItem(CURRENT_BOARD_ID_KEY, currentBoardId);
-};
-
-export const getFirstBoardId = (): string | null => {
-  const firstBoard = appDataSubject.value.boards[0];
-  return firstBoard ? firstBoard.id : null;
-};
-
-export const moveBoard = async (boardId: string, beforeId: string) => {
-  const data = await dataService.getAppData();
-  const boardIndex1 = data.boards.findIndex((b) => b.id == boardId);
-  const boardIndex2 =
-    beforeId == "-1"
-      ? data.boards.length
-      : data.boards.findIndex((b) => b.id == beforeId);
-
-  if (boardIndex1 == -1 || boardIndex2 == -1) return;
-
-  const [movedBoard] = data.boards.splice(boardIndex1, 1);
-  const newIndex = boardIndex2 > boardIndex1 ? boardIndex2 - 1 : boardIndex2;
-  data.boards.splice(newIndex, 0, movedBoard);
-
-  updateAppData(data);
 };

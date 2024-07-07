@@ -16,7 +16,7 @@ const Textarea = forwardRef(
     ref
   ) => {
     return (
-      <div className="space-y-1">
+      <div className="space-y-1 w-full">
         <div
           className={`border rounded-[4px] py-2 px-4 ${
             errorMessage ? "border-red" : "border-medium-grey-25 "

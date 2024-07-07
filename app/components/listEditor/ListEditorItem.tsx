@@ -9,20 +9,28 @@ import { ChangeEvent, Component, forwardRef, RefObject } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface Props {
-  item: Item;
+  item: any;
   index: number;
   onRemove: () => void;
   errorMessage?: string;
   placeholder?: string;
-}
-
-export interface Item {
-  id: string;
-  value: string;
+  listName: string;
+  fieldName: string;
 }
 
 const ListEditorItem = forwardRef(
-  ({ item, onRemove, errorMessage, placeholder, index }: Props, ref) => {
+  (
+    {
+      item,
+      onRemove,
+      errorMessage,
+      placeholder,
+      listName,
+      fieldName,
+      index,
+    }: Props,
+    ref
+  ) => {
     const controls = useDragControls();
 
     const { register } = useFormContext();
@@ -57,7 +65,7 @@ const ListEditorItem = forwardRef(
             <Input
               placeholder={placeholder}
               errorMessage={errorMessage}
-              {...register(`list.${index}.value`)}
+              {...register(`${listName}.${index}.${fieldName}`)}
             ></Input>
             <div className="cursor-pointer select-none" onClick={onRemove}>
               <Image

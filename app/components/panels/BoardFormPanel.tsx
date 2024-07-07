@@ -29,7 +29,7 @@ const BoardFormPanel = () => {
 
   const methods = useForm<boardSchemaType>({
     resolver: zodResolver(boardSchema),
-    defaultValues: { list: [], name: "" },
+    defaultValues: { columns: [], title: "" },
     reValidateMode: "onChange",
   });
 
@@ -54,20 +54,22 @@ const BoardFormPanel = () => {
   };
 
   const handleCreateBoard = (data: boardSchemaType) => {
-    validateBoardName(data.name).then((isValid) => {
+    validateBoardName(data.title).then((isValid) => {
       if (!isValid)
-        setError("name", {
-          message: `Board with the name "${data.name}" already exists`,
+        setError("title", {
+          message: `Board with the name "${data.title}" already exists`,
         });
       else {
+        const boardId = v4();
         const newBoard: BoardType = {
-          id: v4(),
-          title: data.name,
-          columns: data.list.map((item) => ({
-            id: item.id,
+          id: boardId,
+          title: data.title,
+          columns: data.columns.map((item) => ({
+            id: v4(),
             color: "#fff",
-            title: item.value,
+            title: item.title,
             tasks: [],
+            boardId,
           })),
         };
         createBoard(newBoard);
@@ -77,26 +79,27 @@ const BoardFormPanel = () => {
   };
 
   const handleEditBoard = (data: boardSchemaType) => {
-    validateBoardName(data.name).then((isValid) => {
+    validateBoardName(data.title).then((isValid) => {
       if (isValid) {
         const editedBoard: BoardType = {
           id: activeBoard?.id!,
-          title: data.name,
-          columns: data.list.map((item) => {
+          title: data.title,
+          columns: data.columns.map((item) => {
             const col = getColumn(activeBoard?.columns || [], item.id);
             return {
               id: item.id,
               color: col?.color || "#fff",
-              title: item.value,
+              title: item.title,
               tasks: col?.tasks || [],
+              boardId: activeBoard!.id,
             };
           }),
         };
         editBoard(editedBoard);
         closePanel(PANELS.BOARD_FORM_PANEL);
       } else {
-        setError("name", {
-          message: `Board with the name "${data.name}" already exists`,
+        setError("title", {
+          message: `Board with the name "${data.title}" already exists`,
         });
       }
     });
@@ -110,12 +113,8 @@ const BoardFormPanel = () => {
   };
 
   useEffect(() => {
-    setValue("name", activeBoard?.title || "");
-    setValue(
-      "list",
-      activeBoard?.columns.map((col) => ({ id: col.id, value: col.title })) ||
-        []
-    );
+    setValue("title", activeBoard?.title || "");
+    setValue("columns", activeBoard?.columns || []);
   }, [activeBoard]);
 
   const resetPanel = () => {
@@ -136,13 +135,15 @@ const BoardFormPanel = () => {
             <TextField
               placeholder="e.g Web Design"
               title="Board Name"
-              errorMessage={errors.name?.message}
-              {...register("name")}
+              errorMessage={errors.title?.message}
+              {...register("title")}
             ></TextField>
             <ListEditor
               title="Board Columns"
               addButtonTitle="+ Add New Column"
               itemPlaceholder="e.g Todo"
+              listName="columns"
+              fieldName="title"
             ></ListEditor>
             <Button type="submit" variant="primary" size="sm">
               {activeBoard ? "Save Changes" : "Create New Board"}

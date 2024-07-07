@@ -13,7 +13,6 @@ import { taskSchema } from "@/app/schemas/taskSchema";
 import {
   createTask,
   editTask,
-  findColumn,
   fromColIdToOption,
   fromColToOption,
   getStatusArr,
@@ -44,7 +43,7 @@ const TaskFormPanel = () => {
   // Form setup
   const methods = useForm<TaskSchemaType>({
     resolver: zodResolver(taskSchema),
-    defaultValues: { list: [], title: "", description: "", status: "" },
+    defaultValues: { subtasks: [], title: "", description: "", columnId: "" },
     reValidateMode: "onChange",
   });
 
@@ -62,8 +61,9 @@ const TaskFormPanel = () => {
 
   const getDefaultOption = () => {
     if (activeTask) {
-      return fromColToOption(
-        findColumn(currentBoard?.columns!, activeTask.columnId)!
+      return fromColIdToOption(
+        currentBoard?.columns || [],
+        activeTask.columnId || ""
       );
     }
     if (activeColumn) return fromColToOption(activeColumn);
@@ -73,15 +73,16 @@ const TaskFormPanel = () => {
   useEffect(() => {
     setIsEditing(Boolean(activeTask));
     setValue(
-      "list",
+      "subtasks",
       activeTask?.subtasks.map((subtask) => ({
         id: subtask.id,
-        value: subtask.title,
+        title: subtask.title,
+        checked: subtask.checked,
       })) || []
     );
     setValue("title", activeTask?.title || "");
     setValue("description", activeTask?.description || "");
-    setValue("status", getDefaultOption()?.value || "");
+    setValue("columnId", getDefaultOption()?.value || "");
   }, [activeTask, activeColumn, isPanelOpen(PANELS.TASK_FORM_PANEL)]);
 
   const resetPanel = () => {
@@ -97,10 +98,10 @@ const TaskFormPanel = () => {
       id: isEditing ? activeTask?.id! : v4(),
       title: data.title,
       description: data.description,
-      columnId: data.status,
-      subtasks: data.list.map((item) => ({
+      columnId: data.columnId,
+      subtasks: data.subtasks.map((item) => ({
         id: v4(),
-        title: item.value,
+        title: item.title,
         checked: isEditing
           ? getIsSubtaskChecked(activeTask?.subtasks || [], item.id)
           : false,
@@ -139,18 +140,20 @@ const TaskFormPanel = () => {
               title="Subtasks"
               addButtonTitle="+ Add New Subtask"
               itemPlaceholder="e.g Make a coffee"
+              listName="subtasks"
+              fieldName="title"
             />
             <Dropdown
               options={statusArr}
               title="Status"
-              onChange={(v) => setValue("status", v.value)}
+              onChange={(v) => setValue("columnId", v.value)}
               defaultOption={fromColIdToOption(
                 currentBoard?.columns || [],
-                watch("status")
+                watch("columnId")
               )}
             />
-            {errors.status?.message && (
-              <p className="text-red">{errors.status.message}</p>
+            {errors.columnId?.message && (
+              <p className="text-red">{errors.columnId.message}</p>
             )}
             <Button type="submit" variant="primary" size="sm">
               {isEditing ? "Save Changes" : "Create Task"}

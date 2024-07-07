@@ -1,11 +1,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  boards$,
-  getFirstBoardId,
-  saveCurrentBoardId,
-} from "../services/appDataService";
+import { appData$, boards$ } from "../services/appDataService";
 import { BoardType } from "../types/taskTypes";
+import { getCurrentBoardId, saveCurrentBoardId } from "../services/utilities";
+import observableService from "../services/observableService";
 
 const useCurrentBoard = () => {
   const router = useRouter();
@@ -15,7 +13,7 @@ const useCurrentBoard = () => {
   const [boards, setBoards] = useState<BoardType[]>([]);
 
   const setBoardToFirst = () => {
-    const firstBoardId = getFirstBoardId();
+    const firstBoardId = observableService.getFirstBoardId();
     if (firstBoardId) {
       {
         setCurrentBoardId(firstBoardId);
@@ -28,19 +26,16 @@ const useCurrentBoard = () => {
   };
 
   useEffect(() => {
-    const subscription = boards$.subscribe((boards) => setBoards(boards));
-    return () => subscription.unsubscribe();
-  }, []);
+    if (!boards.length) setCurrentBoard(null);
+    const board = boards.find((b) => b.id == currentBoardId);
+    if (board) setCurrentBoard(board);
+    else if (currentBoardId && boards.length) setBoardToFirst();
+  }, [boards, currentBoardId]);
 
   useEffect(() => {
-    if (!currentBoardId && !boards.length) {
-      setCurrentBoard(null);
-    } else {
-      const board = boards.find((board) => board.id == currentBoardId)!;
-      if (!board) setBoardToFirst();
-      else setCurrentBoard(board);
-    }
-  }, [currentBoardId, boards]);
+    const subscription = boards$.subscribe((boards) => setBoards(boards));
+    () => subscription.unsubscribe();
+  }, [currentBoardId]);
 
   useEffect(() => {
     const boardId = searchParams.get("currentBoardId");

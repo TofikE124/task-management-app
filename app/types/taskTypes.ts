@@ -19,6 +19,7 @@ export interface ColumnType {
   title: string;
   color: string;
   tasks: TaskType[];
+  boardId: string;
 }
 
 // Represents a task within a column

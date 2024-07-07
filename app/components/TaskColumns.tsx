@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { LegacyRef, useEffect, useRef, useState } from "react";
+import React, { LegacyRef, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
@@ -8,22 +8,20 @@ import { v4 } from "uuid";
 import { z } from "zod";
 import { PANELS } from "../constatnts/panels";
 import { QuickActionItems } from "../constatnts/QuickActionItems";
+import { DELETE_TYPE, useDeleteContext } from "../contexts/deleteProvider";
 import { usePanel } from "../contexts/PanelProvider";
 import { useAddColumnContext } from "../hooks/useAddColumnContext";
 import useCurrentBoard from "../hooks/useCurrentBoard";
+import useEdgeScroll from "../hooks/useEdgeScroll";
 import useIntersectionObserver from "../hooks/useIntersectionObserver";
 import { useQuickActionSidebarProvider } from "../hooks/useQuickActionSidebarProvider";
 import { useTaskData } from "../hooks/useTaskData";
 import { columnSchema } from "../schemas/columnSchema";
 import {
   addColumn,
-  checkIfColumnExists,
-  deleteBoard,
-  deleteColumn,
-  deleteTask,
   getCheckedTasks,
-  moveTask,
   moveColumn,
+  moveTask,
 } from "../services/appDataService";
 import { ColumnType, TaskType } from "../types/taskTypes";
 import { Button, MotionButton } from "./Button";
@@ -31,11 +29,15 @@ import DraggableItem from "./draggableList/DraggableItem";
 import DraggableList from "./draggableList/DraggableList";
 import DropIndicator from "./draggableList/DropIndicator";
 import TextField from "./TextField";
-import useEdgeScroll from "../hooks/useEdgeScroll";
-import { DELETE_TYPE, useDeleteContext } from "../contexts/deleteProvider";
+import { checkIfColumnExists } from "../services/utilities";
+import { useLoading } from "../contexts/LoadingProvider";
+import { useTheme } from "next-themes";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
+  const { loading } = useLoading();
+
+  if (loading) return <h1 className="text-xl text-white">Loading...</h1>;
 
   if (!currentBoard) {
     return <AppEmpty></AppEmpty>;
@@ -107,22 +109,19 @@ const AddColumn = () => {
     threshold: 0.3,
   });
 
+  // useEffect(() => {
+  //   !isOnScreen
+  //     ? hideItem(QuickActionItems.COLUMN_ADD)
+  //     : showItem(QuickActionItems.COLUMN_ADD);
+  // }, [isOnScreen]);
+
   useEffect(() => {
     if (!isVisible || !ref.current) return;
     ref.current.scrollIntoView({ behavior: "smooth", inline: "end" });
   }, [isVisible]);
 
-  useEffect(() => {
-    !isOnScreen
-      ? hideItem(QuickActionItems.COLUMN_ADD)
-      : showItem(QuickActionItems.COLUMN_ADD);
-  }, [isOnScreen]);
-
   return (
-    <div
-      ref={ref}
-      className={`relative min-w-[280px] ${isVisible ? "-order-1" : ""}`}
-    >
+    <div ref={ref} className="relative min-w-[280px]">
       <AnimatePresence>
         {isVisible ? (
           <ColumnForm
@@ -401,35 +400,40 @@ const ColumnForm = ({
   onAdd,
   disableAnimation = false,
 }: ColumnFormProps) => {
-  const { currentBoardId } = useCurrentBoard();
+  const { currentBoardId, currentBoard } = useCurrentBoard();
 
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
+    setValue,
   } = useForm<columnSchemaType>({
     resolver: zodResolver(columnSchema),
   });
 
+  useEffect(() => {
+    if (!currentBoardId) return;
+    setValue("boardId", currentBoardId);
+  }, [currentBoardId]);
+
   const onSubmit = (data: columnSchemaType) => {
     if (!currentBoardId) return;
-    checkIfColumnExists(currentBoardId, data.title).then((exists) => {
-      if (exists) {
-        setError("title", {
-          message: `A column witht the title '${data.title} already exists'`,
-        });
-      } else {
-        const newColumn: ColumnType = {
-          id: v4(),
-          title: data.title,
-          color: "#fff",
-          tasks: [],
-        };
-        addColumn(currentBoardId, newColumn);
-        onAdd();
-      }
-    });
+    if (checkIfColumnExists(currentBoard!, data.title))
+      setError("title", {
+        message: `A column witht the title '${data.title} already exists'`,
+      });
+    else {
+      const newColumn: ColumnType = {
+        id: v4(),
+        title: data.title,
+        color: "#fff",
+        tasks: [],
+        boardId: currentBoardId,
+      };
+      addColumn(currentBoardId, newColumn);
+      onAdd();
+    }
   };
 
   return (

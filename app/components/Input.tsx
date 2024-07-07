@@ -9,7 +9,7 @@ const Input = forwardRef(
     ref
   ) => {
     return (
-      <div className="space-y-1">
+      <div className="space-y-1 w-full">
         <div
           className={`py-2 px-4 border rounded-[4px]  ${
             errorMessage ? "border-red" : "border-medium-grey-25"

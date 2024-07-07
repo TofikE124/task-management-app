@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import ThemeWrapper from "./components/ThemeWrapper";
-import { PanelProvider } from "./contexts/PanelProvider";
-import SidebarProvider from "./contexts/SidebarProvider";
-import "./globals.scss";
-import { TaskDataProvider } from "./contexts/TskDataProvider";
-import QuickActionSidebarProvider from "./contexts/QuickActionSidebarProvider";
-import AddColumnProvider from "./contexts/AddColumnProvider";
-import DragProvider from "./contexts/DragProvider";
-import DeleteProvider from "./contexts/deleteProvider";
 import Providers from "./components/Providers";
-import NextAuthSession from "./components/NextAuthSession";
+import ThemeWrapper from "./components/ThemeWrapper";
+import "./globals.scss";
+import AppInitializer from "./layouts/AppInitializer";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -32,7 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={plus_jakarta_sans.className}>
         <Providers>
-          <NextAuthSession></NextAuthSession>
+          <AppInitializer></AppInitializer>
           <ThemeWrapper>{children}</ThemeWrapper>
         </Providers>
       </body>

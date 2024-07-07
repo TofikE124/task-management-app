@@ -7,7 +7,6 @@ import {
   fromColIdToOption,
   fromColToOption,
   getCheckedTasks,
-  getTask,
   moveTask,
 } from "@/app/services/appDataService";
 import Checkbox from "../Checkbox";
@@ -16,6 +15,7 @@ import Panel from "../Panel";
 
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
 import VerticalEllipsisPanel from "../VerticalEllipsesPanel";
+import { useEffect } from "react";
 
 const TaskDetailsPanel = () => {
   const { isPanelOpen } = usePanel();
@@ -23,17 +23,19 @@ const TaskDetailsPanel = () => {
   const { currentBoard, currentBoardId } = useCurrentBoard();
 
   const activeTask = taskData?.activeTask;
-  if (!activeTask && isPanelOpen(PANELS.TASK_DETAILS_PANEL))
-    throw new Error("Task is not found");
-
-  // Important
-  const statusArr = currentBoard?.columns.map(fromColToOption) || [];
 
   const resetPanel = () => {
     if (!isPanelOpen(PANELS.TASK_FORM_PANEL)) updateTaskData({});
   };
-
   useOnPanelClose(PANELS.TASK_DETAILS_PANEL, resetPanel);
+
+  if (!activeTask && isPanelOpen(PANELS.TASK_DETAILS_PANEL))
+    throw new Error("Task is not found");
+
+  if (!activeTask) return;
+
+  // Important
+  const statusArr = currentBoard?.columns.map(fromColToOption) || [];
 
   return (
     <Panel name={PANELS.TASK_DETAILS_PANEL} className="w-[480px]">

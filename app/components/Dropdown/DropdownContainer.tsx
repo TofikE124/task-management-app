@@ -1,6 +1,13 @@
 "use client";
 import { useTheme } from "next-themes";
-import { createContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Option } from "./DropdownOption";
 
 interface Props {
@@ -12,6 +19,7 @@ interface DropdownContext {
   toggleDropdown: () => void;
   selectedOption: Option | null;
   updateSelectedOption: (option: Option) => void;
+  setSelectedOption: Dispatch<SetStateAction<Option | null>>;
 }
 export const dropdownContext = createContext<DropdownContext>(
   {} as DropdownContext
@@ -47,7 +55,12 @@ const DropdownContainer = ({ children, onChange = () => {} }: Props) => {
 
   return (
     <dropdownContext.Provider
-      value={{ toggleDropdown, selectedOption, updateSelectedOption }}
+      value={{
+        toggleDropdown,
+        selectedOption,
+        updateSelectedOption,
+        setSelectedOption,
+      }}
     >
       <div
         ref={ref}

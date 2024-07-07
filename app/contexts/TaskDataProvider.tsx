@@ -3,6 +3,7 @@ import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { BoardType, ColumnType, TaskType } from "../types/taskTypes";
 import { appData$, getTask } from "../services/appDataService";
 import useCurrentBoard from "../hooks/useCurrentBoard";
+import observableService from "../services/observableService";
 
 interface TaskData {
   activeColumn?: ColumnType;
@@ -26,12 +27,18 @@ export const TaskDataProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    appData$.subscribe((data) => {
-      getTask(currentBoardId || "", taskData?.activeTask?.id || "").then(
-        (task) => (task ? setTaskData({ activeTask: task }) : null)
+    const subscription = appData$.subscribe((data) => {
+      console.log(data);
+      const task = observableService.getTask(
+        currentBoardId || "",
+        taskData?.activeTask?.id || ""
       );
+
+      if (task) setTaskData({ activeTask: task });
     });
-  }, []);
+
+    return () => subscription.unsubscribe();
+  }, [currentBoardId, taskData?.activeTask?.id]);
 
   return (
     <TaskDataContext.Provider value={{ taskData, updateTaskData }}>

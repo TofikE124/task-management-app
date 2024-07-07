@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { listType } from "./listType";
+import { columnSchema } from "./columnSchema";
+import { v4 } from "uuid";
 
 export const boardSchema = z.object({
-  name: z.string().min(1, "This field is required"),
-  list: listType,
+  id: z.string().optional().default(v4()),
+  title: z.string().min(1, "This field is required"),
+  columns: z.array(columnSchema).optional().default([]),
 });

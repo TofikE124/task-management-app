@@ -4,22 +4,28 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
 import { Button } from "../Button";
-import ListEditorItem, { Item } from "./ListEditorItem";
-import { listType } from "@/app/schemas/listType";
+import ListEditorItem from "./ListEditorItem";
 
 interface Props {
   title: string;
   addButtonTitle: string;
   itemPlaceholder: string;
+  listName: string;
+  fieldName: string;
 }
 
-const ListEditor = ({ title, addButtonTitle, itemPlaceholder }: Props) => {
+const ListEditor = ({
+  title,
+  addButtonTitle,
+  itemPlaceholder,
+  listName,
+  fieldName,
+}: Props) => {
   const schema = z.object({
-    list: listType,
+    [listName]: z.array(z.object({ [fieldName]: z.string() })),
   });
   type schemaType = z.infer<typeof schema>;
   const {
-    register,
     watch,
     formState: { errors },
     control,
@@ -27,10 +33,10 @@ const ListEditor = ({ title, addButtonTitle, itemPlaceholder }: Props) => {
 
   const { append, remove, swap } = useFieldArray({
     control,
-    name: "list" as any, // Type assertion to any to bypass type check
+    name: listName as any, // Type assertion to any to bypass type check
   });
 
-  const list = watch("list", []);
+  const list = watch(listName, []);
 
   const handleAdd = () => {
     const id = v4();
@@ -41,7 +47,7 @@ const ListEditor = ({ title, addButtonTitle, itemPlaceholder }: Props) => {
     remove(index);
   };
 
-  const handleReorder = (newList: Item[]) => {
+  const handleReorder = (newList: any[]) => {
     const { indexA, indexB } = getSwapIndex(list, newList);
     swap(indexA, indexB);
   };
@@ -76,14 +82,18 @@ const ListEditor = ({ title, addButtonTitle, itemPlaceholder }: Props) => {
           onReorder={handleReorder}
           className="mt-2 space-y-3"
         >
-          {list.map((item: Item, index: number) => (
+          {list.map((item, index: number) => (
             <ListEditorItem
               key={item.id}
+              listName={listName}
+              fieldName={fieldName}
               index={index}
               item={item}
               onRemove={() => removePlatform(index)}
               ref={containerRef}
-              errorMessage={(errors["list"] || [])[index]?.value?.message}
+              errorMessage={
+                ((errors[listName] || [])[index] || {})[fieldName]?.message
+              }
               placeholder={itemPlaceholder}
             />
           ))}

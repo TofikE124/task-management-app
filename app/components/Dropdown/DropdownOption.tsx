@@ -13,16 +13,20 @@ interface Props {
 }
 
 const DropdownOption = ({ option, defaultOption }: Props) => {
-  const { updateSelectedOption, selectedOption, toggleDropdown } =
-    useContext(dropdownContext);
+  const {
+    setSelectedOption,
+    updateSelectedOption,
+    selectedOption,
+    toggleDropdown,
+  } = useContext(dropdownContext);
   const handleClick = () => {
-    updateSelectedOption(option);
+    if (selectedOption?.value != option.value) updateSelectedOption(option);
     toggleDropdown();
   };
 
   useEffect(() => {
     if (defaultOption) {
-      updateSelectedOption(option);
+      setSelectedOption(option);
     }
   }, [defaultOption]);
 
