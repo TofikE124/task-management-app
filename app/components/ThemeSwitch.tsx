@@ -44,13 +44,11 @@ const ThemeSwitchLoading = () => {
       width="100%"
       height="48px"
       baseColor={`${
-        resolvedTheme == "dark"
-          ? colors["very-dark-grey"]
-          : colors["light-grey"]
+        resolvedTheme == "dark" ? colors["charcoal-grey"] : colors["light-grey"]
       }`}
       highlightColor={`${
         resolvedTheme == "dark"
-          ? colors["very-dark-grey-highlight"]
+          ? colors["charcoal-grey-highlight"]
           : colors["light-grey-highlight"]
       }`}
       borderRadius={6}

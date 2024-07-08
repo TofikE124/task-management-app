@@ -7,6 +7,9 @@ const APP_DATA_KEY = "appData";
 export class LocalStorageService implements IDataService {
   // Implementation of methods for local storage handling
   async getAppData(): Promise<AppData> {
+    if (!localStorage.getItem(APP_DATA_KEY)) {
+      localStorage.setItem(APP_DATA_KEY, JSON.stringify({ boards: [] }));
+    }
     return JSON.parse(localStorage.getItem(APP_DATA_KEY) || "{boards:[]}");
   }
 
