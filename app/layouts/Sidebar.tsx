@@ -65,6 +65,7 @@ const BoardsList = () => {
   const { boardSummaries } = useBoardSummaries();
   const { currentBoardId, navigateToBoard } = useCurrentBoard();
   const { loading } = useLoading();
+  const mounted = useMountStatus();
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData("type", "board");
@@ -78,7 +79,7 @@ const BoardsList = () => {
     moveBoard(boardId, before);
   };
 
-  if (loading) return <BoardsListLoading></BoardsListLoading>;
+  if (loading && mounted) return <BoardsListLoading></BoardsListLoading>;
 
   return (
     <motion.div className="flex flex-col mt-5" layout>
@@ -120,16 +121,16 @@ const BoardsList = () => {
 const BoardsListLoading = () => {
   return (
     <div className="flex flex-col gap-2 mt-5 relative ml-[-64px]">
+      <BoardLoadingSelected></BoardLoadingSelected>
       <BoardLoading></BoardLoading>
-      <BoardLoading2></BoardLoading2>
-      <BoardLoading2></BoardLoading2>
-      <BoardLoading2></BoardLoading2>
-      <BoardLoading2></BoardLoading2>
+      <BoardLoading></BoardLoading>
+      <BoardLoading></BoardLoading>
+      <BoardLoading></BoardLoading>
     </div>
   );
 };
 
-const BoardLoading = () => {
+const BoardLoadingSelected = () => {
   const { theme } = resolveConfig(tailwindConfig);
   const colors = theme.colors as any;
 
@@ -146,7 +147,7 @@ const BoardLoading = () => {
   );
 };
 
-const BoardLoading2 = () => {
+const BoardLoading = () => {
   const { resolvedTheme } = useTheme();
   const { theme } = resolveConfig(tailwindConfig);
   const colors = theme.colors as any;
@@ -274,6 +275,7 @@ const SidebarFooter = () => {
 const Authentication = () => {
   const session = useSession();
   const { loading } = useLoading();
+  const mounted = useMountStatus();
 
   const buttonMap: Record<
     "authenticated" | "unauthenticated" | "loading",
@@ -297,7 +299,8 @@ const Authentication = () => {
 
   const button = buttonMap[session.status];
 
-  if (loading) return <AuthenticationLoading></AuthenticationLoading>;
+  if (loading && mounted)
+    return <AuthenticationLoading></AuthenticationLoading>;
 
   return (
     <Button onClick={button.onClick} {...button.variant}>
@@ -311,11 +314,8 @@ const AuthenticationLoading = () => {
   const { theme } = resolveConfig(tailwindConfig);
   const colors = theme.colors as any;
 
-  const mounted = useMountStatus();
-
   return (
     <LoadingSkeleton
-      key={mounted ? 1 : 0}
       width="100%"
       height="34px"
       baseColor={`${

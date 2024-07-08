@@ -30,4 +30,6 @@ const Input = forwardRef(
   }
 );
 
+Input.displayName = "MyInput";
+
 export default Input;

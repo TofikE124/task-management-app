@@ -40,4 +40,6 @@ const Textarea = forwardRef(
   }
 );
 
+Textarea.displayName = "MyTextArea";
+
 export default Textarea;

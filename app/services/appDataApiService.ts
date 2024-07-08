@@ -127,6 +127,5 @@ export class AppDataApiService implements IDataService {
       `/api/subtasks/check/${subtaskId}`,
       { checked: value }
     );
-    console.log(updatedSubtask);
   }
 }

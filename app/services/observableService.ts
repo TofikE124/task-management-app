@@ -276,8 +276,6 @@ export class ObservableServic implements IObservableService {
       boards: data.boards.map((b) => (b.id == board.id ? { ...board } : b)),
     };
 
-    console.log(updatedData);
-
     this.appDataSubject.next(updatedData);
   }
 

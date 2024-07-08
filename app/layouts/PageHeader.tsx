@@ -18,7 +18,7 @@ const PageHeader = () => {
       <div className="flex items-center justify-between py-5 px-6 w-full">
         <>
           <h2 className="heading-xl text-black dark:text-white sm:hidden">
-            {currentBoard?.title}
+            {currentBoard?.title || "Kanban"}
           </h2>
           <MobilePageHeaderTitle></MobilePageHeaderTitle>
         </>
@@ -64,7 +64,7 @@ const MobilePageHeaderTitle = () => {
       <Image width={24} height={24} src={MobileLogo} alt="Mobile Logog" />
       <div className="flex items-center gap-2 cursor-pointer">
         <h2 className="heading-xl text-black dark:text-white">
-          {currentBoard?.title}
+          {currentBoard?.title || "Kanban"}
         </h2>
         <Image width={8} height={4} src={CheveronDown} alt="Mobile Logog" />
       </div>

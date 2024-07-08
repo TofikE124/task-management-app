@@ -33,7 +33,6 @@ const SidebarProvider = ({ children }: PropsWithChildren) => {
   const SIDEBAR_KEY = "isSidebarVisible";
 
   useEffect(() => {
-    console.log(window.innerWidth);
     const isSidebarVisible = JSON.parse(
       localStorage.getItem(SIDEBAR_KEY) ||
         (window.innerWidth > 768 ? "true" : "false")

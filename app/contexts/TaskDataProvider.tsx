@@ -28,7 +28,6 @@ export const TaskDataProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const subscription = appData$.subscribe((data) => {
-      console.log(data);
       const task = observableService.getTask(
         currentBoardId || "",
         taskData?.activeTask?.id || ""

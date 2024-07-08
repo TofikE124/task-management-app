@@ -10,26 +10,29 @@ import { TaskDataProvider } from "../contexts/TaskDataProvider";
 import { SessionProvider } from "next-auth/react";
 import AuthProvider from "../contexts/AuthProvider";
 import { LoadingProvider } from "../contexts/LoadingProvider";
+import { CurrentBoardProvider } from "../contexts/CurrentBoardProvider";
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
     <ThemeProvider>
       <LoadingProvider>
-        <PanelProvider>
-          <SidebarProvider>
-            <QuickActionSidebarProvider>
-              <TaskDataProvider>
-                <AddColumnProvider>
-                  <DragProvider>
-                    <AuthProvider>
-                      <DeleteProvider>{children}</DeleteProvider>
-                    </AuthProvider>
-                  </DragProvider>
-                </AddColumnProvider>
-              </TaskDataProvider>
-            </QuickActionSidebarProvider>
-          </SidebarProvider>
-        </PanelProvider>
+        <CurrentBoardProvider>
+          <PanelProvider>
+            <SidebarProvider>
+              <QuickActionSidebarProvider>
+                <TaskDataProvider>
+                  <AddColumnProvider>
+                    <DragProvider>
+                      <AuthProvider>
+                        <DeleteProvider>{children}</DeleteProvider>
+                      </AuthProvider>
+                    </DragProvider>
+                  </AddColumnProvider>
+                </TaskDataProvider>
+              </QuickActionSidebarProvider>
+            </SidebarProvider>
+          </PanelProvider>
+        </CurrentBoardProvider>
       </LoadingProvider>
     </ThemeProvider>
   );

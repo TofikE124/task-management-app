@@ -17,8 +17,7 @@ const ThemeSwitch = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const { loading } = useLoading();
 
-  if (loading)
-    return <ThemeSwitchLoading key={mounted ? 1 : 0}></ThemeSwitchLoading>;
+  if (loading && mounted) return <ThemeSwitchLoading></ThemeSwitchLoading>;
 
   return (
     <div

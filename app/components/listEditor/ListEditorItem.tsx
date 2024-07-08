@@ -82,4 +82,6 @@ const ListEditorItem = forwardRef(
   }
 );
 
+ListEditorItem.displayName = "ListEditorItem";
+
 export default ListEditorItem;

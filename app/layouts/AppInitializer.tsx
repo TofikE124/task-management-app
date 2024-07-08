@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import React, { PropsWithChildren, useEffect } from "react";
+import React, { PropsWithChildren, Suspense, useEffect } from "react";
 import { initializeApp } from "../services/appDataService";
 import { useLoading } from "../contexts/LoadingProvider";
 
@@ -15,7 +15,7 @@ const AppInitializer = ({ children }: PropsWithChildren) => {
     });
   }, [session.status]);
 
-  return <>{children}</>;
+  return <Suspense>{children}</Suspense>;
 };
 
 export default AppInitializer;

@@ -41,7 +41,9 @@ import { getRandomColor } from "../utilities/colors";
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
   const { loading } = useLoading();
-  if (loading) return <ColumnsLoading></ColumnsLoading>;
+  const mounted = useMountStatus();
+
+  if (loading && mounted) return <ColumnsLoading></ColumnsLoading>;
   if (!currentBoard) {
     return <AppEmpty></AppEmpty>;
   }
@@ -334,9 +336,9 @@ const AppEmpty = () => {
 
   return (
     <div className="w-full h-full grid place-items-center text-center">
-      <div>
+      <div className="max-w-[75%]">
         <h3 className="heading-l text-medium-grey">
-          You don't have any boards yet. Create a new board to get started
+          You don&apos;t have any boards yet. Create a new board to get started
         </h3>
         <Button
           variant="primary"
@@ -484,13 +486,8 @@ const ColumnForm = ({
 export default TaskColumns;
 
 const ColumnsLoading = () => {
-  const mounted = useMountStatus();
-
   return (
-    <div
-      key={mounted ? 0 : 1}
-      className="h-full w-full overflow-x-scroll overflow-y-hidden flex gap-6 pl-6 pt-6 pb-12 pr-[50px]"
-    >
+    <div className="h-full w-full overflow-x-scroll overflow-y-hidden flex gap-6 pl-6 pt-6 pb-12 pr-[50px]">
       <ColumnLoading count={2}></ColumnLoading>
       <ColumnLoading count={3}></ColumnLoading>
       <ColumnLoading count={1}></ColumnLoading>

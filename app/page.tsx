@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import QuickActionSidebar from "./components/QuickActionSidebar/QuickActionSidebar";
 import TaskColumns from "./components/TaskColumns";
 import MainContent from "./layouts/MainContent";

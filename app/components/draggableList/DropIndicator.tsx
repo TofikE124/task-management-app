@@ -20,7 +20,7 @@ const DropIndicator = ({
     if (!ref.current) return;
 
     ref.current.dataset[`${containerName}Id`] = containerId;
-  }, []);
+  }, [containerName, containerId]);
 
   return (
     <div

@@ -4,6 +4,7 @@ import Providers from "./components/Providers";
 import ThemeWrapper from "./components/ThemeWrapper";
 import "./globals.scss";
 import AppInitializer from "./layouts/AppInitializer";
+import { Suspense } from "react";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -23,10 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={plus_jakarta_sans.className}>
-        <Providers>
-          <AppInitializer></AppInitializer>
-          <ThemeWrapper>{children}</ThemeWrapper>
-        </Providers>
+        <Suspense>
+          <Providers>
+            <AppInitializer></AppInitializer>
+            <ThemeWrapper>{children}</ThemeWrapper>
+          </Providers>
+        </Suspense>
       </body>
     </html>
   );
