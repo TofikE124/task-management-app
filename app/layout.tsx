@@ -5,7 +5,6 @@ import Providers from "./components/Providers";
 import ThemeWrapper from "./components/ThemeWrapper";
 import "./globals.scss";
 import AppInitializer from "./layouts/AppInitializer";
-import { Head, Html } from "next/document";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
