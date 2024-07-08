@@ -28,36 +28,30 @@ const QuickActionSidebarProvider = ({ children }: PropsWithChildren) => {
 
   const isVisible = (name: string) => {
     const visible = items[name]?.isVisible;
-    // console.log(`isVisible called for ${name}: ${visible}`);
     return visible;
   };
 
   const showItem = (name: string) => {
-    // console.log(`showItem called for ${name}`);
     const item = getItem(name);
     setItems((prev) => ({ ...prev, [name]: { ...item, isVisible: true } }));
   };
 
   const hideItem = (name: string) => {
-    // console.log(`hideItem called for ${name}`);
     const item = getItem(name);
     setItems((prev) => ({ ...prev, [name]: { ...item, isVisible: false } }));
   };
 
   const isActive = (name: string) => {
     const active = items[name]?.isActive;
-    // console.log(`isActive called for ${name}: ${active}`);
     return active;
   };
 
   const activateItem = (name: string) => {
-    // console.log(`activateItem called for ${name}`);
     const item = getItem(name);
     setItems((prev) => ({ ...prev, [name]: { ...item, isActive: true } }));
   };
 
   const deactivateItem = (name: string) => {
-    // console.log(`deactivateItem called for ${name}`);
     const item = getItem(name);
     setItems((prev) => ({ ...prev, [name]: { ...item, isActive: false } }));
   };

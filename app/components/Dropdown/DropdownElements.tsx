@@ -10,17 +10,3 @@ const DropdownElements = ({ children }: Props) => {
 };
 
 export default DropdownElements;
-
-// Example
-{
-  /* 
-<DropdownContainer onChange={(value) => console.log(value)}>
-  <DropdownTitle>Dropdown</DropdownTitle>
-  <Dropdown>
-    <DropdownOption defaultOption>Todo</DropdownOption>
-    <DropdownOption>Doing</DropdownOption>
-    <DropdownOption>Done</DropdownOption>
-  </Dropdown>
-</DropdownContainer> 
-*/
-}

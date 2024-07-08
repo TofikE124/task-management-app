@@ -1,20 +1,23 @@
+import tailwindConfig from "@/tailwind.config";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AnimatePresence, color, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useTheme } from "next-themes";
 import React, { LegacyRef, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
+import resolveConfig from "tailwindcss/resolveConfig";
 import { v4 } from "uuid";
 import { z } from "zod";
 import { PANELS } from "../constatnts/panels";
 import { QuickActionItems } from "../constatnts/QuickActionItems";
 import { DELETE_TYPE, useDeleteContext } from "../contexts/deleteProvider";
+import { useLoading } from "../contexts/LoadingProvider";
 import { usePanel } from "../contexts/PanelProvider";
 import { useAddColumnContext } from "../hooks/useAddColumnContext";
 import useCurrentBoard from "../hooks/useCurrentBoard";
 import useEdgeScroll from "../hooks/useEdgeScroll";
 import useIntersectionObserver from "../hooks/useIntersectionObserver";
-import { useQuickActionSidebarProvider } from "../hooks/useQuickActionSidebarProvider";
 import { useTaskData } from "../hooks/useTaskData";
 import { columnSchema } from "../schemas/columnSchema";
 import {
@@ -25,28 +28,24 @@ import {
 } from "../services/appDataService";
 import { checkIfColumnExists } from "../services/utilities";
 import { ColumnType, TaskType } from "../types/taskTypes";
+import { getRandomColor } from "../utilities/colors";
 import { Button, MotionButton } from "./Button";
 import DraggableItem from "./draggableList/DraggableItem";
 import DraggableList from "./draggableList/DraggableList";
 import DropIndicator from "./draggableList/DropIndicator";
 import LoadingSkeleton from "./LoadingSkeleton";
 import TextField from "./TextField";
-import { useLoading } from "../contexts/LoadingProvider";
-import { useTheme } from "next-themes";
-import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "@/tailwind.config";
-import useMountStatus from "../hooks/useMountStatus";
-import { getRandomColor } from "../utilities/colors";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
   const { loading } = useLoading();
-  const mounted = useMountStatus();
 
-  if (loading && mounted) return <ColumnsLoading></ColumnsLoading>;
+  if (loading) return <ColumnsLoading></ColumnsLoading>;
+
   if (!currentBoard) {
     return <AppEmpty></AppEmpty>;
   }
+
   if (!currentBoard.columns.length) return <BoardEmpty />;
 
   return <Columns columns={currentBoard.columns}></Columns>;
@@ -107,7 +106,6 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
 };
 
 const AddColumn = () => {
-  const { hideItem, showItem } = useQuickActionSidebarProvider();
   const { isVisible, hide, show } = useAddColumnContext();
 
   const { ref, isVisible: isOnScreen } = useIntersectionObserver({
@@ -240,7 +238,6 @@ const Task = ({ task }: TaskProps) => {
 const BurnBarrel = () => {
   const { openPanel } = usePanel();
   const { updateAction } = useDeleteContext();
-  const { showItem, hideItem } = useQuickActionSidebarProvider();
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.3,
   });
@@ -277,11 +274,11 @@ const BurnBarrel = () => {
     }
   };
 
-  useEffect(() => {
-    isVisible
-      ? showItem(QuickActionItems.BURN_BARREL)
-      : hideItem(QuickActionItems.BURN_BARREL);
-  }, [isVisible]);
+  // useEffect(() => {
+  //   isVisible
+  //     ? showItem(QuickActionItems.BURN_BARREL)
+  //     : hideItem(QuickActionItems.BURN_BARREL);
+  // }, [isVisible]);
 
   return (
     <motion.div
@@ -333,6 +330,10 @@ const AddTask = ({ column }: AddTaskProps) => {
 
 const AppEmpty = () => {
   const { openPanel } = usePanel();
+
+  // useEffect(() => {
+  //   hideItem(QuickActionItems.BURN_BARREL);
+  // }, [isVisible(QuickActionItems.BURN_BARREL)]);
 
   return (
     <div className="w-full h-full grid place-items-center text-center">
