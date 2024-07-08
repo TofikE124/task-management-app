@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useRef } from "react";
 import useCurrentBoard from "../hooks/useCurrentBoard";
 
-import { useSidebarProvider } from "@/app/hooks/useSidebarProvider";
+import { useSidebar } from "@/app/hooks/useSidebarProvider";
 import hideSidebarIcon from "/public/images/icon-hide-sidebar.svg";
 import iconShowSidebar from "/public/images/icon-show-sidebar.svg";
 import logoDark from "/public/images/logo-dark.svg";
@@ -31,7 +31,7 @@ import useMountStatus from "../hooks/useMountStatus";
 import { useLoading } from "../contexts/LoadingProvider";
 
 const Sidebar = () => {
-  const { isVisible } = useSidebarProvider();
+  const { isVisible } = useSidebar();
 
   const { boardSummaries } = useBoardSummaries();
   const ref = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={`bg-white dark:bg-dark-grey w-[300px] h-full border-r border-lines-light dark:border-lines-dark transition-[margin] duration-500 ${
+        className={`bg-white dark:bg-dark-grey w-[300px] h-full border-r border-lines-light dark:border-lines-dark transition-[margin] duration-500 z-30 sm:fixed ${
           isVisible ? "ml-0" : "ml-[-300px]"
         }`}
         ref={ref}
@@ -55,6 +55,7 @@ const Sidebar = () => {
           <SidebarFooter></SidebarFooter>
         </div>
       </div>
+      <BlackOverlay></BlackOverlay>
       <ShowSidebar></ShowSidebar>
     </>
   );
@@ -225,7 +226,7 @@ const SidebarCreateNewBoard = () => {
 };
 
 const ShowSidebar = () => {
-  const { isVisible, showSidebar } = useSidebarProvider();
+  const { isVisible, showSidebar } = useSidebar();
 
   return (
     <AnimatePresence>
@@ -235,7 +236,7 @@ const ShowSidebar = () => {
           animate={{ translateX: "0" }}
           exit={{ translateX: "-100%" }}
           transition={{ duration: 0.5 }}
-          className="fixed left-0 bottom-8 cursor-pointer z-50"
+          className="fixed left-0 bottom-8 cursor-pointer z-50 sm:hidden"
           onClick={showSidebar}
         >
           <div className="w-14 h-12 rounded-r-full bg-main-purple grid place-items-center">
@@ -253,7 +254,7 @@ const ShowSidebar = () => {
 };
 
 const SidebarFooter = () => {
-  const { hideSidebar } = useSidebarProvider();
+  const { hideSidebar } = useSidebar();
 
   return (
     <div className="pl-6 flex flex-col  gap-5 mt-auto select-none">
@@ -350,6 +351,18 @@ const Logo = () => {
         className="dark:hidden"
       />
     </div>
+  );
+};
+
+const BlackOverlay = () => {
+  const { hideSidebar, isVisible } = useSidebar();
+  return (
+    <div
+      className={`fixed inset-0 bg-black/50 z-20 transition-all duration-200 ${
+        isVisible ? "opacity-100 visible" : "opacity-0 invisible"
+      }  lgmd:hidden`}
+      onClick={hideSidebar}
+    ></div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useSidebarProvider } from "./../../hooks/useSidebarProvider";
+import { useSidebar } from "./../../hooks/useSidebarProvider";
 import { columnSchema } from "./../../schemas/columnSchema";
 import { prisma } from "@/prisma/client";
 import { getServerSession } from "next-auth";

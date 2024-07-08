@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
-import { useSidebarProvider } from "../hooks/useSidebarProvider";
+import { useSidebar } from "../hooks/useSidebarProvider";
 
 const MainContent = ({ children }: PropsWithChildren) => {
-  const { isVisible } = useSidebarProvider();
+  const { isVisible } = useSidebar();
 
   return (
     <div

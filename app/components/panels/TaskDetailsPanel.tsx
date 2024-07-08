@@ -111,6 +111,7 @@ const TaskMoreOptions = () => {
       onSecondOptionClick={handleDelete}
       firstOptionText="Edit Task"
       secondOptionText="Delete Task"
+      className="sm:translate-x-[calc(-100%+10px)] sm:origin-top-right sm:mt-1"
     ></VerticalEllipsisPanel>
   );
 };

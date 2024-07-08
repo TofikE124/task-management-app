@@ -12,13 +12,13 @@ const Panel = ({ children, name, className }: PanelProps) => {
 
   return (
     <div
-      className={`fixed z-30 inset-0 grid place-items-center transition-all duration-300 ${
+      className={`fixed z-30 inset-0 flex items-center justify-center transition-all duration-300 ${
         isPanelOpen(name) ? "visible" : "invisible"
       }`}
     >
       <div
         className={twMerge(
-          `relative z-30 bg-white dark:bg-dark-grey p-8 w-[480px] rounded-md max-w-[480px] transition-transform duration-300 ${
+          `relative z-30 bg-white dark:bg-dark-grey p-8 w-[480px] rounded-md max-w-[480px] sm:max-w-[90%] transition-transform duration-300 ${
             isPanelOpen(name) ? "scale-100" : "scale-0"
           }`,
           className
