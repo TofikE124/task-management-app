@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { useDrag } from "./useDrag";
 
 interface EdgeScrollConfig {
-  edgeThreshold?: number;
-  maxScrollSpeed?: number;
-  minScrollSpeed?: number;
+  thresholdPercent?: number; // Percentage of viewport width for edge threshold
+  maxScrollSpeedPercent?: number; // Percentage of screen width for maxScrollSpeed
+  minScrollSpeedPercent?: number; // Percentage of screen width for minScrollSpeed
   interval?: number;
   containerName?: string[];
 }
 
 const useEdgeScroll = ({
-  edgeThreshold = 200,
-  maxScrollSpeed = 15,
-  minScrollSpeed = 1,
+  thresholdPercent = 10, // Default to 10% of viewport width
+  maxScrollSpeedPercent = 0.2, // 20% of screen width
+  minScrollSpeedPercent = 0.02, // 2% of screen width
   interval = 5,
   containerName: containerNames,
 }: EdgeScrollConfig = {}) => {
@@ -33,10 +33,13 @@ const useEdgeScroll = ({
 
     // Configuration variables
     const accelerationFactor =
-      (maxScrollSpeed - minScrollSpeed) / edgeThreshold; // How fast the speed increases
+      (maxScrollSpeedPercent - minScrollSpeedPercent) / 100; // How fast the speed increases
 
     // Get the width of the viewport
     const viewportWidth = window.innerWidth;
+
+    // Calculate edgeThreshold based on percentage of viewport width
+    const edgeThreshold = Math.floor((viewportWidth * thresholdPercent) / 100);
 
     // Get the current position of the cursor relative to the viewport
     const cursorX = e.clientX;
@@ -47,16 +50,18 @@ const useEdgeScroll = ({
     if (cursorX >= viewportWidth - edgeThreshold) {
       const distanceToEdge = cursorX - (viewportWidth - edgeThreshold);
       const speed = Math.min(
-        maxScrollSpeed,
-        minScrollSpeed + distanceToEdge * accelerationFactor
+        viewportWidth * maxScrollSpeedPercent,
+        viewportWidth * minScrollSpeedPercent +
+          distanceToEdge * accelerationFactor
       );
       setScrollDirection("right");
       setScrollSpeed(speed);
     } else if (cursorX <= leftEdgeThreshold + edgeThreshold) {
       const distanceToEdge = leftEdgeThreshold + edgeThreshold - cursorX;
       const speed = Math.min(
-        maxScrollSpeed,
-        minScrollSpeed + distanceToEdge * accelerationFactor
+        viewportWidth * maxScrollSpeedPercent,
+        viewportWidth * minScrollSpeedPercent +
+          distanceToEdge * accelerationFactor
       );
       setScrollDirection("left");
       setScrollSpeed(speed);
@@ -81,7 +86,7 @@ const useEdgeScroll = ({
       window.removeEventListener("dragover", handleDragOverWrapper);
       window.removeEventListener("drop", handleDrop);
     };
-  }, [edgeThreshold, maxScrollSpeed, minScrollSpeed]);
+  }, [thresholdPercent, maxScrollSpeedPercent, minScrollSpeedPercent]);
 
   useEffect(() => {
     if (!containerNames?.includes(draggedItemContainerName || "")) return;

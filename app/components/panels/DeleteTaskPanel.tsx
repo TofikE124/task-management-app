@@ -4,8 +4,8 @@ import { PANELS } from "@/app/constatnts/panels";
 import { useTaskData } from "@/app/hooks/useTaskData";
 import { Button } from "../Button";
 import { usePanel } from "@/app/contexts/PanelProvider";
-import { deleteTask } from "@/app/services/appDataService";
 import useCurrentBoard from "@/app/hooks/useCurrentBoard";
+import appDataService from "@/app/services/appDataService";
 
 const DeleteTaskPanel = () => {
   const { currentBoardId } = useCurrentBoard();
@@ -20,7 +20,7 @@ const DeleteTaskPanel = () => {
 
   const handleDelete = () => {
     if (!task || !currentBoardId) return;
-    deleteTask(currentBoardId, task?.columnId, task?.id);
+    appDataService.deleteTask(currentBoardId, task?.columnId, task?.id);
     closePanel(PANELS.DELETE_TASK_PANEL);
     closePanel(PANELS.TASK_DETAILS_PANEL);
   };

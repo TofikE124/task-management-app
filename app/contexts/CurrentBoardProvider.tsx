@@ -1,13 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  createContext,
-  PropsWithChildren,
-  Suspense,
-  useEffect,
-  useState,
-} from "react";
-import { boards$ } from "../services/appDataService";
+import { createContext, PropsWithChildren, useEffect, useState } from "react";
+import appDataService from "../services/appDataService";
 import observableService from "../services/observableService";
 import { saveCurrentBoardId } from "../services/utilities";
 import { BoardType } from "../types/taskTypes";
@@ -28,6 +22,7 @@ export const CurrentBoardProvider = ({ children }: PropsWithChildren) => {
   const [currentBoardId, setCurrentBoardId] = useState<string | null>(null);
   const [currentBoard, setCurrentBoard] = useState<BoardType | null>(null);
   const [boards, setBoards] = useState<BoardType[]>([]);
+  const [gotSearchParams, setGotSearchParams] = useState(false);
 
   const setBoardToFirst = () => {
     const firstBoardId = observableService.getFirstBoardId();
@@ -44,16 +39,23 @@ export const CurrentBoardProvider = ({ children }: PropsWithChildren) => {
     if (!boards.length) setCurrentBoard(null);
     const board = boards.find((b) => b.id == currentBoardId);
     if (board) setCurrentBoard(board);
-    else if (currentBoardId && boards.length) setBoardToFirst();
+    else if (
+      (!currentBoardId && boards.length && gotSearchParams) ||
+      (currentBoardId && !board && boards.length && gotSearchParams)
+    )
+      setBoardToFirst();
   }, [boards, currentBoardId]);
 
   useEffect(() => {
-    const subscription = boards$.subscribe((boards) => setBoards(boards));
+    const subscription = appDataService.boards$.subscribe((boards) =>
+      setBoards(boards)
+    );
     return () => subscription.unsubscribe();
   }, [currentBoardId]);
 
   useEffect(() => {
     const boardId = searchParams.get("currentBoardId");
+    setGotSearchParams(true);
     setCurrentBoardId(boardId);
   }, [searchParams]);
 

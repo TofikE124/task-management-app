@@ -1,10 +1,6 @@
 "use client";
 import React, { createContext, useContext, ReactNode, useState } from "react";
-import {
-  deleteBoard,
-  deleteColumn,
-  deleteTask,
-} from "../services/appDataService";
+import appDataService from "../services/appDataService";
 
 // Define an enum for delete action types
 export enum DELETE_TYPE {
@@ -51,13 +47,17 @@ const DeleteProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     switch (action.type) {
       case DELETE_TYPE.TASK:
-        deleteTask(action.boardId, action.columnId, action.taskId);
+        appDataService.deleteTask(
+          action.boardId,
+          action.columnId,
+          action.taskId
+        );
         break;
       case DELETE_TYPE.COLUMN:
-        deleteColumn(action.boardId, action.columnId);
+        appDataService.deleteColumn(action.boardId, action.columnId);
         break;
       case DELETE_TYPE.BOARD:
-        deleteBoard(action.boardId);
+        appDataService.deleteBoard(action.boardId);
         break;
       default:
         throw new Error("Unknown delete action type");

@@ -10,14 +10,6 @@ import useCurrentBoard from "@/app/hooks/useCurrentBoard";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
 import { useTaskData } from "@/app/hooks/useTaskData";
 import { taskSchema } from "@/app/schemas/taskSchema";
-import {
-  createTask,
-  editTask,
-  fromColIdToOption,
-  fromColToOption,
-  getStatusArr,
-} from "@/app/services/appDataService";
-
 import { Button } from "../Button";
 import Dropdown from "../Dropdown/Dropdown";
 import ListEditor from "../listEditor/ListEditor";
@@ -25,6 +17,12 @@ import Panel from "../Panel";
 import TextField from "../TextField";
 
 import { Subtask, TaskType } from "@/app/types/taskTypes";
+import {
+  fromColIdToOption,
+  fromColToOption,
+  getStatusArr,
+} from "@/app/services/utilities";
+import appDataService from "@/app/services/appDataService";
 
 const getIsSubtaskChecked = (subtasks: Subtask[], subtaskId: string) => {
   return subtasks.find((sub) => sub.id == subtaskId)?.checked || false;
@@ -109,8 +107,13 @@ const TaskFormPanel = () => {
     };
 
     if (isEditing)
-      editTask(currentBoardId!, activeTask?.id!, activeTask?.columnId!, task);
-    else createTask(currentBoardId!, task);
+      appDataService.editTask(
+        currentBoardId!,
+        activeTask?.id!,
+        activeTask?.columnId!,
+        task
+      );
+    else appDataService.createTask(currentBoardId!, task);
     closePanel(PANELS.TASK_FORM_PANEL);
   };
 

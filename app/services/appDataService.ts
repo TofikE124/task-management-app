@@ -11,7 +11,8 @@ import {
 import { AppDataApiService } from "./appDataApiService";
 import { LocalStorageService } from "./appDataLocalStorageService";
 import observableService from "./observableService";
-import { before } from "node:test";
+import { DataServiceBase } from "./DataServiceBase";
+import { fromBoardsToSummaries } from "./utilities";
 
 // Interface for data service
 export interface IDataService {
@@ -67,290 +68,193 @@ export interface IDataService {
 // Initialize the appropriate data service based on the user's session
 let dataService: IDataService;
 
-export const initializeDataService = async (
-  session: SessionContextValue | null
-) => {
-  if (session?.data?.user) {
-    dataService = new AppDataApiService();
-  } else {
-    dataService = new LocalStorageService();
-  }
-};
+export class AppDataService extends DataServiceBase {
+  public appData$ = observableService.appData$;
+  public boards$ = this.appData$.pipe(map(({ boards }) => boards));
+  public boardSummaries$ = this.appData$.pipe(
+    map(({ boards }) => fromBoardsToSummaries(boards))
+  );
 
-// BehaviorSubject for app-wide state
-export const appData$ = observableService.appData$;
+  public initializeDataService = async (
+    session: SessionContextValue | null
+  ) => {
+    if (session?.data?.user) {
+      dataService = new AppDataApiService();
+    } else {
+      dataService = new LocalStorageService();
+    }
+  };
 
-// Initialization Functions
-export const initializeApp = async (
-  session: SessionContextValue | null
-): Promise<AppData> => {
-  await initializeDataService(session);
-  const data = await dataService.getAppData();
-  observableService.updateAppData(data);
-  return data;
-};
+  public initializeApp = async (
+    session: SessionContextValue | null
+  ): Promise<AppData> => {
+    await this.initializeDataService(session);
+    const data = await dataService.getAppData();
+    observableService.updateAppData(data);
+    return data;
+  };
 
-// Observable for boards
-export const boards$ = appData$.pipe(map(({ boards }) => boards));
+  public getBoardData = async (boardId: string): Promise<BoardType | null> => {
+    const data = await dataService.getAppData();
+    return data.boards.find(({ id }) => id === boardId) || null;
+  };
 
-// Observable for board summaries
-export const boardSummaries$ = appData$.pipe(
-  map(({ boards }) => fromBoardsToSummaries(boards))
-);
+  public createBoard = async (
+    newBoard: BoardType
+  ): Promise<BoardType | null> => {
+    return this.executeOperation<BoardType>(async () => {
+      observableService.addBoard(newBoard);
+      return dataService.createBoard(newBoard);
+    });
+  };
 
-// Board Management Functions
-export const getBoardData = async (
-  boardId: string
-): Promise<BoardType | null> => {
-  const data = await dataService.getAppData();
-  return data.boards.find(({ id }) => id === boardId) || null;
-};
+  public editBoard = async (
+    editedBoard: BoardType
+  ): Promise<BoardType | null> => {
+    return this.executeOperation<BoardType>(async () => {
+      observableService.updateBoard(editedBoard);
+      return dataService.editBoard(editedBoard);
+    });
+  };
 
-export const createBoard = async (
-  newBoard: BoardType
-): Promise<BoardType | null> => {
-  try {
-    observableService.addBoard(newBoard);
-    const createdBoard = await dataService.createBoard(newBoard);
-    return createdBoard;
-  } catch (error) {
-    console.error("Error creating board:", error);
-    return null;
-  }
-};
+  public deleteBoard = async (boardId: string): Promise<BoardType | null> => {
+    return this.executeOperation<BoardType>(async () => {
+      observableService.deleteBoard(boardId);
+      return dataService.deleteBoard(boardId);
+    });
+  };
 
-export const editBoard = async (
-  editedBoard: BoardType
-): Promise<BoardType | null> => {
-  try {
-    observableService.updateBoard(editedBoard);
-    return await dataService.editBoard(editedBoard);
-  } catch (error) {
-    console.error("Error editing board", error);
-    return null;
-  }
-};
+  public moveBoard = async (boardId: string, before: string): Promise<void> => {
+    this.executeOperation<void>(async () => {
+      observableService.moveBoard(boardId, before);
+      await dataService.moveBoard(boardId, before);
+    });
+  };
 
-export const deleteBoard = async (
-  boardId: string
-): Promise<BoardType | null> => {
-  try {
-    observableService.deleteBoard(boardId);
-    return await dataService.deleteBoard(boardId);
-  } catch (error) {
-    console.error("Error deleting board: ", error);
-    return null;
-  }
-};
+  public addColumn = async (
+    boardId: string,
+    newColumn: ColumnType
+  ): Promise<ColumnType | null> => {
+    return this.executeOperation<ColumnType>(async () => {
+      observableService.addColumn(boardId, newColumn);
+      return dataService.addColumn(boardId, newColumn);
+    });
+  };
 
-export const moveBoard = async (
-  boardId: string,
-  before: string
-): Promise<void> => {
-  try {
-    observableService.moveBoard(boardId, before);
+  public editColumn = async (
+    boardId: string,
+    editedColumn: ColumnType
+  ): Promise<ColumnType | null> => {
+    return this.executeOperation<ColumnType>(async () => {
+      observableService.updateColumn(boardId, editedColumn);
+      return dataService.editColumn(boardId, editedColumn);
+    });
+  };
 
-    await dataService.moveBoard(boardId, before);
-  } catch (error) {
-    console.error("Error moving board :", error);
-  }
-};
+  public deleteColumn = async (
+    boardId: string,
+    columnId: string
+  ): Promise<ColumnType | null> => {
+    return this.executeOperation<ColumnType>(async () => {
+      observableService.deleteColumn(boardId, columnId);
+      return dataService.deleteColumn(boardId, columnId);
+    });
+  };
 
-// Column Management Functions
-export const addColumn = async (
-  boardId: string,
-  newColumn: ColumnType
-): Promise<ColumnType | null> => {
-  try {
-    observableService.addColumn(boardId, newColumn);
+  public moveColumn = async (
+    boardId: string,
+    columnId: string,
+    beforeId: string
+  ): Promise<void> => {
+    this.executeOperation<void>(async () => {
+      observableService.moveColumn(boardId, columnId, beforeId);
+      await dataService.moveColumn(boardId, columnId, beforeId);
+    });
+  };
 
-    const addedColumn = await dataService.addColumn(boardId, newColumn);
-    return addedColumn;
-  } catch (error) {
-    console.error("Error adding column: ", error);
-    return null;
-  }
-};
+  public createTask = async (
+    boardId: string,
+    task: TaskType
+  ): Promise<TaskType | null> => {
+    return this.executeOperation<TaskType>(async () => {
+      observableService.addTask(boardId, task);
+      return dataService.createTask(boardId, task);
+    });
+  };
 
-export const editColumn = async (
-  boardId: string,
-  editedColumn: ColumnType
-): Promise<ColumnType | null> => {
-  try {
-    observableService.updateColumn(boardId, editedColumn);
+  public editTask = async (
+    boardId: string,
+    taskId: string,
+    oldColumnId: string,
+    newTask: TaskType
+  ): Promise<TaskType | null> => {
+    return this.executeOperation<TaskType>(async () => {
+      observableService.updateTask(boardId, taskId, oldColumnId, newTask);
+      return dataService.editTask(boardId, taskId, oldColumnId, newTask);
+    });
+  };
 
-    return await dataService.editColumn(boardId, editedColumn);
-  } catch (error) {
-    console.error("Error editing column: ", error);
-    return null;
-  }
-};
+  public deleteTask = async (
+    boardId: string,
+    columnId: string,
+    taskId: string
+  ): Promise<TaskType | null> => {
+    return this.executeOperation<TaskType>(async () => {
+      observableService.deleteTask(boardId, columnId, taskId);
+      return dataService.deleteTask(boardId, columnId, taskId);
+    });
+  };
 
-export const deleteColumn = async (
-  boardId: string,
-  columnId: string
-): Promise<ColumnType | null> => {
-  try {
-    observableService.deleteColumn(boardId, columnId);
+  public moveTask = async (
+    boardId: string,
+    columnId: string,
+    newColumnId: string,
+    taskId: string,
+    beforeId: string
+  ): Promise<void> => {
+    this.executeOperation<void>(async () => {
+      observableService.moveTask(
+        boardId,
+        columnId,
+        newColumnId,
+        taskId,
+        beforeId
+      );
+      await dataService.moveTask(
+        boardId,
+        columnId,
+        newColumnId,
+        taskId,
+        beforeId
+      );
+    });
+  };
 
-    return await dataService.deleteColumn(boardId, columnId);
-  } catch (error) {
-    console.error("Error deleting column: ", error);
-    return null;
-  }
-};
+  public checkSubtask = async (
+    boardId: string,
+    columnId: string,
+    taskId: string,
+    subtaskId: string,
+    value: boolean
+  ): Promise<void> => {
+    this.executeOperation<void>(async () => {
+      observableService.checkSubtask(
+        boardId,
+        columnId,
+        taskId,
+        subtaskId,
+        value
+      );
+      await dataService.checkSubtask(
+        boardId,
+        columnId,
+        taskId,
+        subtaskId,
+        value
+      );
+    });
+  };
+}
 
-export const moveColumn = async (
-  boardId: string,
-  columnId: string,
-  beforeId: string
-): Promise<void> => {
-  try {
-    observableService.moveColumn(boardId, columnId, beforeId);
-
-    await dataService.moveColumn(boardId, columnId, beforeId);
-  } catch (error) {
-    console.error("Error moving column: ", error);
-  }
-};
-
-// Task Management Functions
-export const createTask = async (
-  boardId: string,
-  task: TaskType
-): Promise<TaskType | null> => {
-  try {
-    observableService.addTask(boardId, task);
-
-    return await dataService.createTask(boardId, task);
-  } catch (error) {
-    console.error("Error creating task: ", error);
-    return null;
-  }
-};
-
-export const editTask = async (
-  boardId: string,
-  taskId: string,
-  oldColumnId: string,
-  newTask: TaskType
-): Promise<TaskType | null> => {
-  try {
-    observableService.updateTask(boardId, taskId, oldColumnId, newTask);
-
-    return await dataService.editTask(boardId, taskId, oldColumnId, newTask);
-  } catch (error) {
-    console.error("Error editing task: ", error);
-    return null;
-  }
-};
-
-export const deleteTask = async (
-  boardId: string,
-  columnId: string,
-  taskId: string
-): Promise<TaskType | null> => {
-  try {
-    observableService.deleteTask(boardId, columnId, taskId);
-
-    return await dataService.deleteTask(boardId, columnId, taskId);
-  } catch (error) {
-    console.error("Error deleting task: ", error);
-    return null;
-  }
-};
-
-export const moveTask = async (
-  boardId: string,
-  columnId: string,
-  newColumnId: string,
-  taskId: string,
-  beforeId: string
-): Promise<void> => {
-  try {
-    observableService.moveTask(
-      boardId,
-      columnId,
-      newColumnId,
-      taskId,
-      beforeId
-    );
-
-    await dataService.moveTask(
-      boardId,
-      columnId,
-      newColumnId,
-      taskId,
-      beforeId
-    );
-  } catch (error) {
-    console.error("Error moving task: ", error);
-  }
-};
-
-// Subtask Operations
-export const checkSubtask = async (
-  boardId: string,
-  columnId: string,
-  taskId: string,
-  subtaskId: string,
-  value: boolean
-): Promise<void> => {
-  try {
-    observableService.checkSubtask(boardId, columnId, taskId, subtaskId, value);
-
-    await dataService.checkSubtask(boardId, columnId, taskId, subtaskId, value);
-  } catch (error) {
-    console.error("Error checking subtask: ", error);
-  }
-};
-
-// Helper Functions
-const fromBoardsToSummaries = (boards: BoardType[]): BoardSummary[] => {
-  return boards.map(({ id, title }) => ({ id, title }));
-};
-
-const findBoard = (boards: BoardType[], boardId: string) => {
-  return boards.find((board) => board.id == boardId);
-};
-
-const findColumn = (columns: ColumnType[], columnId: string) => {
-  return columns.find((col) => col.id == columnId);
-};
-
-export const findTask = (tasks: TaskType[], taskId: string) => {
-  return tasks.find((task) => task.id == taskId);
-};
-
-export const getTask = async (
-  boardId: string,
-  taskId: string
-): Promise<TaskType | null> => {
-  const data = await dataService?.getAppData();
-  const board = findBoard(data?.boards || [], boardId);
-  if (!board) return null;
-  for (const column of board.columns) {
-    const task = findTask(column.tasks, taskId);
-    if (task) return task;
-  }
-  return null;
-};
-
-export const getCheckedTasks = (subtasks: Subtask[]) => {
-  return subtasks.reduce((sum, sub) => sum + (sub.checked ? 1 : 0), 0);
-};
-
-export const fromColToOption = (col: ColumnType) => ({
-  value: col.id,
-  label: col.title,
-});
-
-export const fromColIdToOption = (columns: ColumnType[], colId: string) => {
-  const col = findColumn(columns, colId);
-  if (!col) return;
-  return fromColToOption(col);
-};
-
-export const getStatusArr = (currentBoard: BoardType | null) => {
-  return currentBoard?.columns.map(fromColToOption) || [];
-};
+const appDataService = new AppDataService();
+export default appDataService;

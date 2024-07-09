@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { boardSummaries$ } from "../services/appDataService";
 import { BoardSummary } from "../types/taskTypes";
+import appDataService from "../services/appDataService";
 
 const useBoardSummaries = () => {
   const [boardSummaries, setBoardSummaries] = useState<BoardSummary[]>([]);
 
   useEffect(() => {
-    const subscription = boardSummaries$.subscribe((summaries) => {
-      setBoardSummaries(summaries);
-    });
+    const subscription = appDataService.boardSummaries$.subscribe(
+      (summaries) => {
+        setBoardSummaries(summaries);
+      }
+    );
 
     return () => {
       subscription.unsubscribe();

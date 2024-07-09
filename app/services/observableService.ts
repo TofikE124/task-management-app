@@ -1,4 +1,3 @@
-import { IDataService } from "./appDataService";
 import { BehaviorSubject, map } from "rxjs";
 import {
   AppData,
@@ -68,6 +67,10 @@ export class ObservableServic implements IObservableService {
   public boardSummaries$ = this.appData$.pipe(
     map(({ boards }) => fromBoardsToSummaries(boards))
   );
+
+  public getCurrentData(): AppData {
+    return this.appDataSubject.value;
+  }
 
   public updateAppData(data: AppData) {
     this.appDataSubject.next(data);

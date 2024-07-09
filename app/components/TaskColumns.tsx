@@ -20,13 +20,7 @@ import useEdgeScroll from "../hooks/useEdgeScroll";
 import useIntersectionObserver from "../hooks/useIntersectionObserver";
 import { useTaskData } from "../hooks/useTaskData";
 import { columnSchema } from "../schemas/columnSchema";
-import {
-  addColumn,
-  getCheckedTasks,
-  moveColumn,
-  moveTask,
-} from "../services/appDataService";
-import { checkIfColumnExists } from "../services/utilities";
+import { checkIfColumnExists, getCheckedTasks } from "../services/utilities";
 import { ColumnType, TaskType } from "../types/taskTypes";
 import { getRandomColor } from "../utilities/colors";
 import { Button, MotionButton } from "./Button";
@@ -35,6 +29,7 @@ import DraggableList from "./draggableList/DraggableList";
 import DropIndicator from "./draggableList/DropIndicator";
 import LoadingSkeleton from "./LoadingSkeleton";
 import TextField from "./TextField";
+import appDataService from "../services/appDataService";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
@@ -65,7 +60,7 @@ const Columns = ({ columns }: { columns: ColumnType[] }) => {
   const handleDrop = (e: React.DragEvent, beforeId: string) => {
     const columnId = e.dataTransfer.getData("columnId");
     if (!columnId) return;
-    moveColumn(currentBoardId || "", columnId, beforeId);
+    appDataService.moveColumn(currentBoardId || "", columnId, beforeId);
   };
 
   const containerRef = useEdgeScroll({ containerName: ["wrapper", "column"] });
@@ -164,7 +159,7 @@ const Column = ({ column }: ColumnProps) => {
     const columnId = e.dataTransfer.getData("columnId");
     const taskId = e.dataTransfer.getData("taskId");
 
-    moveTask(boardId, columnId, column.id, taskId, before);
+    appDataService.moveTask(boardId, columnId, column.id, taskId, before);
   };
 
   return (
@@ -437,7 +432,7 @@ const ColumnForm = ({
         tasks: [],
         boardId: currentBoardId,
       };
-      addColumn(currentBoardId, newColumn);
+      appDataService.addColumn(currentBoardId, newColumn);
       onAdd();
     }
   };

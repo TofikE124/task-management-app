@@ -4,14 +4,14 @@ import { Button } from "../Button";
 import Panel from "../Panel";
 import useCurrentBoard from "@/app/hooks/useCurrentBoard";
 import { usePanel } from "@/app/contexts/PanelProvider";
-import { deleteBoard } from "@/app/services/appDataService";
+import appDataService from "@/app/services/appDataService";
 
 const DeleteBoardPanel = () => {
   const { closePanel } = usePanel();
   const { currentBoard, currentBoardId } = useCurrentBoard();
 
   const handleDelete = () => {
-    deleteBoard(currentBoardId || "");
+    appDataService.deleteBoard(currentBoardId || "");
     closePanel(PANELS.DELETE_BOARD_PANEL);
   };
 

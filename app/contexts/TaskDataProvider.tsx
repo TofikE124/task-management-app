@@ -1,7 +1,7 @@
 "use client";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { BoardType, ColumnType, TaskType } from "../types/taskTypes";
-import { appData$, getTask } from "../services/appDataService";
+import appDataService from "../services/appDataService";
 import useCurrentBoard from "../hooks/useCurrentBoard";
 import observableService from "../services/observableService";
 
@@ -27,7 +27,7 @@ export const TaskDataProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    const subscription = appData$.subscribe((data) => {
+    const subscription = appDataService.appData$.subscribe((data) => {
       const task = observableService.getTask(
         currentBoardId || "",
         taskData?.activeTask?.id || ""

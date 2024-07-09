@@ -3,7 +3,6 @@ import { usePanel } from "@/app/contexts/PanelProvider";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
 import { useTaskData } from "@/app/hooks/useTaskData";
 import { boardSchema } from "@/app/schemas/boardSchema";
-import { boards$, createBoard, editBoard } from "@/app/services/appDataService";
 import { BoardType, ColumnType } from "@/app/types/taskTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
@@ -15,6 +14,7 @@ import { Button } from "../Button";
 import Panel from "../Panel";
 import TextField from "../TextField";
 import ListEditor from "../listEditor/ListEditor";
+import appDataService from "@/app/services/appDataService";
 
 const getColumn = (columns: ColumnType[], columnId: string) => {
   return columns.find((col) => col.id == columnId);
@@ -72,7 +72,7 @@ const BoardFormPanel = () => {
             boardId,
           })),
         };
-        createBoard(newBoard);
+        appDataService.createBoard(newBoard);
         closePanel(PANELS.BOARD_FORM_PANEL);
       }
     });
@@ -95,7 +95,7 @@ const BoardFormPanel = () => {
             };
           }),
         };
-        editBoard(editedBoard);
+        appDataService.editBoard(editedBoard);
         closePanel(PANELS.BOARD_FORM_PANEL);
       } else {
         setError("title", {
@@ -107,7 +107,7 @@ const BoardFormPanel = () => {
 
   const validateBoardName = async (boardName: string) => {
     if (boardName == activeBoard?.title) return true;
-    return boards$
+    return appDataService.boards$
       .pipe(take(1))
       .subscribe((boards) => boards.every((board) => board.title != boardName));
   };

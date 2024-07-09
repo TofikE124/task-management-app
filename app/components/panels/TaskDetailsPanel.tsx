@@ -2,13 +2,6 @@ import { PANELS } from "@/app/constatnts/panels";
 import { usePanel } from "@/app/contexts/PanelProvider";
 import useCurrentBoard from "@/app/hooks/useCurrentBoard";
 import { useTaskData } from "@/app/hooks/useTaskData";
-import {
-  checkSubtask,
-  fromColIdToOption,
-  fromColToOption,
-  getCheckedTasks,
-  moveTask,
-} from "@/app/services/appDataService";
 import Checkbox from "../Checkbox";
 import Dropdown from "../Dropdown/Dropdown";
 import Panel from "../Panel";
@@ -16,6 +9,12 @@ import Panel from "../Panel";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";
 import VerticalEllipsisPanel from "../VerticalEllipsesPanel";
 import { useEffect } from "react";
+import {
+  fromColIdToOption,
+  fromColToOption,
+  getCheckedTasks,
+} from "@/app/services/utilities";
+import appDataService from "@/app/services/appDataService";
 
 const TaskDetailsPanel = () => {
   const { isPanelOpen } = usePanel();
@@ -60,7 +59,7 @@ const TaskDetailsPanel = () => {
                 checked={sub.checked}
                 key={sub.id}
                 onChange={(v) => {
-                  checkSubtask(
+                  appDataService.checkSubtask(
                     currentBoardId!,
                     activeTask?.columnId,
                     activeTask?.id,
@@ -80,7 +79,7 @@ const TaskDetailsPanel = () => {
           )}
           title="Current Status"
           onChange={(option) => {
-            moveTask(
+            appDataService.moveTask(
               currentBoardId!,
               activeTask?.columnId || "",
               option.value,

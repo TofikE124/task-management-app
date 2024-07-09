@@ -13,7 +13,6 @@ import logoDark from "/public/images/logo-dark.svg";
 import logoLight from "/public/images/logo-light.svg";
 import DraggableList from "@/app/components/draggableList/DraggableList";
 import DraggableItem from "@/app/components/draggableList/DraggableItem";
-import { moveBoard } from "@/app/services/appDataService";
 import DropIndicator from "@/app/components/draggableList/DropIndicator";
 import Icon from "@/app/components/Icon";
 import { PANELS } from "@/app/constatnts/panels";
@@ -29,6 +28,7 @@ import tailwindConfig from "@/tailwind.config";
 import { useTheme } from "next-themes";
 import useMountStatus from "../hooks/useMountStatus";
 import { useLoading } from "../contexts/LoadingProvider";
+import appDataService from "../services/appDataService";
 
 const Sidebar = () => {
   const { isVisible } = useSidebar();
@@ -76,7 +76,7 @@ const BoardsList = () => {
     const type = e.dataTransfer.getData("type");
     if (type != "board") return;
     const boardId = e.dataTransfer.getData("boardId");
-    moveBoard(boardId, before);
+    appDataService.moveBoard(boardId, before);
   };
 
   if (loading && mounted) return <BoardsListLoading></BoardsListLoading>;
