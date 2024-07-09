@@ -5,6 +5,7 @@ import Providers from "./components/Providers";
 import ThemeWrapper from "./components/ThemeWrapper";
 import "./globals.scss";
 import AppInitializer from "./layouts/AppInitializer";
+import { Toaster } from "react-hot-toast";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className={plus_jakarta_sans.className}>
         <Suspense>
           <Providers>
+            <Toaster></Toaster>
             <AppInitializer></AppInitializer>
             <ThemeWrapper>{children}</ThemeWrapper>
           </Providers>

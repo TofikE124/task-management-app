@@ -29,6 +29,7 @@ import { useTheme } from "next-themes";
 import useMountStatus from "../hooks/useMountStatus";
 import { useLoading } from "../contexts/LoadingProvider";
 import appDataService from "../services/appDataService";
+import BurnBarrel from "../components/BurnBarrel";
 
 const Sidebar = () => {
   const { isVisible } = useSidebar();
@@ -52,6 +53,12 @@ const Sidebar = () => {
             </p>
             <BoardsList></BoardsList>
           </div>
+          {boardSummaries.length ? (
+            <motion.div layout className="mx-auto lgmd:hidden my-auto py-4">
+              <BurnBarrel width={100} height={100}></BurnBarrel>
+            </motion.div>
+          ) : null}
+
           <SidebarFooter></SidebarFooter>
         </div>
       </div>

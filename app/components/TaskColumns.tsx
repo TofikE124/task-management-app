@@ -30,6 +30,7 @@ import DropIndicator from "./draggableList/DropIndicator";
 import LoadingSkeleton from "./LoadingSkeleton";
 import TextField from "./TextField";
 import appDataService from "../services/appDataService";
+import BurnBarrel from "./BurnBarrel";
 
 const TaskColumns = () => {
   const { currentBoard } = useCurrentBoard();
@@ -227,73 +228,6 @@ const Task = ({ task }: TaskProps) => {
         </p>
       </motion.div>
     </>
-  );
-};
-
-const BurnBarrel = () => {
-  const { openPanel } = usePanel();
-  const { updateAction } = useDeleteContext();
-  const { ref, isVisible } = useIntersectionObserver({
-    threshold: 0.3,
-  });
-  const [active, setActive] = useState(false);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setActive(true);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    openPanel(PANELS.CONFIRM_PANEL);
-    const type = e.dataTransfer.getData("type");
-    if (type == "task") {
-      const boardId = e.dataTransfer.getData("boardId");
-      const columnId = e.dataTransfer.getData("columnId");
-      const taskId = e.dataTransfer.getData("taskId");
-      updateAction({ boardId, columnId, taskId, type: DELETE_TYPE.TASK });
-    } else if (type == "column") {
-      const boardId = e.dataTransfer.getData("boardId");
-      const columnId = e.dataTransfer.getData("columnId");
-      updateAction({ boardId, columnId, type: DELETE_TYPE.COLUMN });
-    } else if (type == "board") {
-      const boardId = e.dataTransfer.getData("boardId");
-      updateAction({ boardId, type: DELETE_TYPE.BOARD });
-    }
-
-    setActive(false);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    {
-      setActive(false);
-    }
-  };
-
-  // useEffect(() => {
-  //   isVisible
-  //     ? showItem(QuickActionItems.BURN_BARREL)
-  //     : hideItem(QuickActionItems.BURN_BARREL);
-  // }, [isVisible]);
-
-  return (
-    <motion.div
-      ref={ref as LegacyRef<HTMLDivElement>}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      layout
-      className={`grid size-56 shrink-0 place-content-center rounded border text-3xl ${
-        active
-          ? "border-red bg-red/50 text-white dark:text-red-hover"
-          : "bg-main-purple/50 text-white border-main-purple dark:bg-transparent  dark:text-medium-grey dark:border-medium-grey"
-      }`}
-    >
-      {active ? (
-        <FaFire className="animate-bounce pointer-events-none"></FaFire>
-      ) : (
-        <FiTrash></FiTrash>
-      )}
-    </motion.div>
   );
 };
 

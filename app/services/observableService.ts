@@ -69,7 +69,7 @@ export class ObservableServic implements IObservableService {
   );
 
   public getCurrentData(): AppData {
-    return this.appDataSubject.value;
+    return { boards: [...this.appDataSubject.value.boards] };
   }
 
   public updateAppData(data: AppData) {
