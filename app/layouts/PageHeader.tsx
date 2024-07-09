@@ -54,7 +54,7 @@ const AddTask = () => {
 
 const MobilePageHeaderTitle = () => {
   const { currentBoard } = useCurrentBoard();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isVisible } = useSidebar();
 
   return (
     <div
@@ -66,7 +66,11 @@ const MobilePageHeaderTitle = () => {
         <h2 className="heading-xl text-black dark:text-white">
           {currentBoard?.title || "Kanban"}
         </h2>
-        <Image width={8} height={4} src={CheveronDown} alt="Mobile Logog" />
+        <div
+          className={`transition-all ${isVisible ? "-rotate-90" : "rotate-90"}`}
+        >
+          <Image width={8} height={4} src={CheveronDown} alt="Mobile Logog" />
+        </div>
       </div>
     </div>
   );
