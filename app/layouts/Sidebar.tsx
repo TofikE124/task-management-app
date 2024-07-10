@@ -46,7 +46,8 @@ const Sidebar = () => {
           isVisible ? "ml-0" : "ml-[-300px]"
         }`}
         style={{
-          transition: "background-color 200ms, color 200ms, margin 0.5s",
+          transition:
+            "background-color 200ms,border-color 200ms, color 200ms, margin 0.5s",
         }}
         ref={ref}
       >

@@ -1,7 +1,12 @@
 "use client";
 import tailwindConfig from "@/tailwind.config";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
 import { useTheme } from "next-themes";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -177,6 +182,7 @@ const Column = ({ column }: ColumnProps) => {
           containerId={column.id}
           onDrop={handleDrop}
           axis="y"
+          className="mt-2"
         >
           {column.tasks.map((task) => (
             <DraggableItem
@@ -213,16 +219,41 @@ const Task = ({ task }: TaskProps) => {
     openPanel(PANELS.TASK_DETAILS_PANEL);
   };
 
+  const checkedSubtasksLength = getCheckedTasks(task.subtasks);
+
+  const progress = useMotionValue(checkedSubtasksLength / task.subtasks.length);
+  const progressBackgroundColor = useTransform(
+    progress,
+    [0, 0.25, 0.5, 0.75, 1],
+    ["#FF4C4C", "#FFA500", "#FFD700", "#9ACD32", "#4CAF50"]
+  );
+
+  useEffect(() => {
+    progress.set(checkedSubtasksLength / task.subtasks.length);
+  }, [checkedSubtasksLength, task.subtasks.length, progress]);
+
   return (
     <>
       <motion.div
         onClick={handleClick}
-        className="py-6 px-4 rounded-lg space-y-2 bg-white dark:bg-dark-grey"
+        className="py-6 px-4 rounded-lg space-y-2 bg-white dark:bg-dark-grey min-h-[105px]"
       >
         <h3 className="heading-m text-black dark:text-white">{task.title}</h3>
         <p className="text-medium-grey">
-          {getCheckedTasks(task.subtasks)} of {task.subtasks.length} subtasks
+          {checkedSubtasksLength} of {task.subtasks.length} subtasks
         </p>
+        {task.subtasks.length ? (
+          <div className="h-1 w-full rounded-full bg-medium-grey/50 overflow-hidden">
+            <motion.div
+              className="h-full transition-[width,background-color] duration-500"
+              style={{
+                width:
+                  (checkedSubtasksLength / task.subtasks.length) * 100 + "%",
+                backgroundColor: progressBackgroundColor,
+              }}
+            ></motion.div>
+          </div>
+        ) : null}
       </motion.div>
     </>
   );

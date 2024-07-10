@@ -19,7 +19,6 @@ const DraggableItem = ({
   onDragStart = () => {},
   onClick = () => {},
   children,
-  className,
 }: DraggableItemProps) => {
   const { updateDraggedItemContainerName } = useDrag();
 
