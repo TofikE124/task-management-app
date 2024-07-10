@@ -1,3 +1,4 @@
+"use client";
 import { PANELS } from "@/app/constatnts/panels";
 import { usePanel } from "@/app/contexts/PanelProvider";
 import { useOnPanelClose } from "@/app/hooks/useOnPanelClose";

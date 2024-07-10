@@ -1,3 +1,4 @@
+"use client";
 import { useDrag } from "@/app/hooks/useDrag";
 import BurnBarrelQuickAction from "./quickActionItems/BurnBarrelQuickAction";
 import ColumnAddQuickAction from "./quickActionItems/ColumnAddQuickAction";

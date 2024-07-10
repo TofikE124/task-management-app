@@ -8,6 +8,30 @@ interface Props {
   params: { id: string };
 }
 
+export async function GET(request: NextRequest, { params: { id } }: Props) {
+  const session = await getServerSession();
+
+  if (!session?.user)
+    return NextResponse.json(
+      { message: "You are not allowed to do that" },
+      { status: 401 }
+    );
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email! },
+  });
+
+  if (!user)
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
+
+  const board = await prisma.board.findUnique({ where: { id } });
+
+  if (!board)
+    return NextResponse.json({ message: "Board not found" }, { status: 404 });
+
+  return NextResponse.json(board, { status: 200 });
+}
+
 export async function DELETE(request: NextRequest, { params: { id } }: Props) {
   const session = await getServerSession();
 
@@ -22,7 +46,7 @@ export async function DELETE(request: NextRequest, { params: { id } }: Props) {
   });
 
   if (!user)
-    return NextResponse.json({ message: "User not found" }, { status: 400 });
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
 
   const deletedBoard = await prisma.board.delete({
     where: { id },

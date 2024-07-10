@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  createContext,
-  PropsWithChildren,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, PropsWithChildren, useState } from "react";
 
 type QuickActionSidebarContextType = {
   hideItem: (name: string) => void;

@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import ThemeSwitch from "../components/ThemeSwitch";
 
@@ -71,7 +72,7 @@ const Sidebar = () => {
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <BurnBarrel width={100} height={100}></BurnBarrel>
+                <BurnBarrel></BurnBarrel>
               </motion.div>
             ) : null}
           </AnimatePresence>

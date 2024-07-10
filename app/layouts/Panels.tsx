@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import BoardFormPanel from "../components/panels/BoardFormPanel";
 import TaskFormPanel from "../components/panels/TaskFormPanel";

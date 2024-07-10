@@ -1,3 +1,4 @@
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -92,6 +93,7 @@ const TaskFormPanel = () => {
 
   // Form submit handler
   const onSubmit = (data: TaskSchemaType) => {
+    console.log(activeTask);
     const task: TaskType = {
       id: isEditing ? activeTask?.id! : v4(),
       title: data.title,

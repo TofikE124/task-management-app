@@ -1,5 +1,6 @@
+"use client";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import { useQuickActionSidebarProvider } from "../../hooks/useQuickActionSidebarProvider";
 
 interface ActionItemProps {

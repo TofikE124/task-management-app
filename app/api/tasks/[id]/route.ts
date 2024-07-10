@@ -82,4 +82,6 @@ export async function PATCH(request: NextRequest, { params: { id } }: Props) {
       taskId: updatedTask.id,
     })),
   });
+
+  return NextResponse.json(updatedTask, { status: 200 });
 }

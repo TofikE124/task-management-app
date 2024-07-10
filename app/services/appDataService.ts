@@ -100,8 +100,8 @@ export class AppDataService extends DataServiceBase {
   };
 
   public getBoardData = async (boardId: string): Promise<BoardType | null> => {
-    const data = await dataService.getAppData();
-    return data.boards.find(({ id }) => id === boardId) || null;
+    const data = await dataService?.getAppData();
+    return data?.boards.find(({ id }) => id === boardId) || null;
   };
 
   public createBoard = async (

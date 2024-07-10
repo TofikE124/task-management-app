@@ -1,3 +1,4 @@
+"use client";
 import { PANELS } from "@/app/constatnts/panels";
 import { QuickActionItems } from "@/app/constatnts/QuickActionItems";
 import { usePanel } from "@/app/contexts/PanelProvider";

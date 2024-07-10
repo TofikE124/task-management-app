@@ -1,3 +1,4 @@
+"use client";
 import { QuickActionItems } from "@/app/constatnts/QuickActionItems";
 import { RiInsertColumnLeft } from "react-icons/ri";
 import QuickActionItem from "../QuickActionItem";
