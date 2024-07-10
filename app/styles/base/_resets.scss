@@ -46,6 +46,7 @@ select {
   font: inherit;
 }
 
+textarea,
 input {
   @apply sm:text-[16px] #{!important};
 }

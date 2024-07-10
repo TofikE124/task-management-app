@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "User not found" }, { status: 400 });
   const createdTask = await prisma.task.create({
     data: {
+      id: body.id,
       title: body.title,
       description: body.description,
       columnId: body.columnId,

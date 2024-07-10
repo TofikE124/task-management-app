@@ -354,21 +354,15 @@ const ColumnForm = ({
 
   const onSubmit = (data: columnSchemaType) => {
     if (!currentBoardId) return;
-    if (checkIfColumnExists(currentBoard!, data.title))
-      setError("title", {
-        message: `A column witht the title '${data.title} already exists'`,
-      });
-    else {
-      const newColumn: ColumnType = {
-        id: v4(),
-        title: data.title,
-        color: getRandomColor(),
-        tasks: [],
-        boardId: currentBoardId,
-      };
-      appDataService.addColumn(currentBoardId, newColumn);
-      onAdd();
-    }
+    const newColumn: ColumnType = {
+      id: v4(),
+      title: data.title,
+      color: getRandomColor(),
+      tasks: [],
+      boardId: currentBoardId,
+    };
+    appDataService.addColumn(currentBoardId, newColumn);
+    onAdd();
   };
 
   return (

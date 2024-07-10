@@ -42,16 +42,17 @@ const ListEditorItem = forwardRef(
         dragListener={false}
         value={item}
         dragControls={controls}
-        dragConstraints={ref as RefObject<HTMLDivElement>}
         initial={{ opacity: 0, scale: 0.5, visibility: "hidden" }}
         animate={{ opacity: 1, scale: 1, y: 0, visibility: "visible" }}
         exit={{ opacity: 0, y: 50, visibility: "hidden", height: 0 }}
         transition={{ duration: 0.5 }}
+        dragConstraints={ref as RefObject<HTMLDivElement>}
       >
         <div className="flex items-center gap-4 select-none">
-          <div
+          <motion.div
             onPointerDown={(e) => controls.start(e)}
             className="cursor-pointer"
+            dragConstraints={ref as RefObject<HTMLDivElement>}
           >
             <Icon
               width={20}
@@ -59,7 +60,7 @@ const ListEditorItem = forwardRef(
               src="/images/icon-menu.svg"
               color={resolvedTheme == "dark" ? "#fff" : "#828FA3"}
             ></Icon>
-          </div>
+          </motion.div>
 
           <div className="flex items-center gap-4 w-full">
             <Input

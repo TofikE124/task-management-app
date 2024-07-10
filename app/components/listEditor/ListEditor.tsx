@@ -1,5 +1,5 @@
-import { Reorder } from "framer-motion";
-import { useRef } from "react";
+import { motion, Reorder } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
@@ -65,22 +65,24 @@ const ListEditor = ({
     return { indexA, indexB };
   };
 
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="flex flex-col">
       <p className="text-medium-grey">{title}</p>
-      <div
-        className={`${
-          false ? "overflow-y-hidden" : "overflow-y-auto"
-        } max-h-[150px] scrollbar-rounded pr-4`}
-        ref={containerRef}
+      <motion.div
+        className={`pr-4 overflow-y-auto scrollbar-rounded max-h-[150px] transition-[height] duration-[350ms]`}
+        style={{
+          height: list.length * 50,
+          overflowY: list.length <= 3 ? "hidden" : "scroll",
+        }}
       >
         <Reorder.Group
           axis="y"
           values={list}
           onReorder={handleReorder}
           className="mt-2 space-y-3"
+          ref={containerRef}
         >
           {list.map((item, index: number) => (
             <ListEditorItem
@@ -98,7 +100,7 @@ const ListEditor = ({
             />
           ))}
         </Reorder.Group>
-      </div>
+      </motion.div>
 
       <Button
         variant="secondary"

@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
 
   const column = await prisma.column.create({
     data: {
+      id: body.id,
       title: body.title,
       boardId: body.boardId!,
       color: body.color,

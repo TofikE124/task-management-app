@@ -3,7 +3,7 @@ import ThemeSwitch from "../components/ThemeSwitch";
 
 import useBoardSummaries from "@/app/hooks/useBoardSummaries";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import useCurrentBoard from "../hooks/useCurrentBoard";
 
 import { useSidebar } from "@/app/hooks/useSidebarProvider";
@@ -33,8 +33,9 @@ import BurnBarrel from "../components/BurnBarrel";
 
 const Sidebar = () => {
   const { isVisible } = useSidebar();
-
   const { boardSummaries } = useBoardSummaries();
+  const [isDragging, setIsDragging] = useState(false);
+
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -51,13 +52,29 @@ const Sidebar = () => {
             <p className="heading-s uppercase text-medium-grey dark:text-white">
               All Boards ({boardSummaries.length})
             </p>
-            <BoardsList></BoardsList>
+            <BoardsList
+              onDragStart={() => {
+                setIsDragging(true);
+              }}
+              onDrop={() => {
+                setIsDragging(false);
+              }}
+            ></BoardsList>
           </div>
-          {boardSummaries.length ? (
-            <motion.div layout className="mx-auto lgmd:hidden my-auto py-4">
-              <BurnBarrel width={100} height={100}></BurnBarrel>
-            </motion.div>
-          ) : null}
+          <AnimatePresence>
+            {boardSummaries.length && isDragging ? (
+              <motion.div
+                layout
+                className="mx-auto lgmd:hidden my-auto py-4"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <BurnBarrel width={100} height={100}></BurnBarrel>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
 
           <SidebarFooter></SidebarFooter>
         </div>
@@ -68,18 +85,28 @@ const Sidebar = () => {
   );
 };
 
-const BoardsList = () => {
+interface BoardListProps {
+  onDragStart?: () => void;
+  onDrop?: () => void;
+}
+
+const BoardsList = ({
+  onDragStart = () => {},
+  onDrop = () => {},
+}: BoardListProps) => {
   const { boardSummaries } = useBoardSummaries();
   const { currentBoardId, navigateToBoard } = useCurrentBoard();
   const { loading } = useLoading();
   const mounted = useMountStatus();
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
+    onDragStart();
     e.dataTransfer.setData("type", "board");
     e.dataTransfer.setData("boardId", id);
   };
 
   const handleDrop = (e: React.DragEvent, before: string) => {
+    onDrop();
     const type = e.dataTransfer.getData("type");
     if (type != "board") return;
     const boardId = e.dataTransfer.getData("boardId");

@@ -69,7 +69,24 @@ export class ObservableServic implements IObservableService {
   );
 
   public getCurrentData(): AppData {
-    return { boards: [...this.appDataSubject.value.boards] };
+    return {
+      boards: [
+        ...this.appDataSubject.value.boards.map((board) => ({
+          ...board,
+          columns: [
+            ...board.columns.map((col) => ({
+              ...col,
+              tasks: [
+                ...col.tasks.map((task) => ({
+                  ...task,
+                  subtasks: [...task.subtasks],
+                })),
+              ],
+            })),
+          ],
+        })),
+      ],
+    };
   }
 
   public updateAppData(data: AppData) {

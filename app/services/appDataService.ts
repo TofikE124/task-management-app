@@ -59,7 +59,7 @@ export interface IDataService {
   checkSubtask(
     boardId: string,
     columnId: string,
-    taskID: string,
+    taskId: string,
     subtaskId: string,
     value: boolean
   ): Promise<void>;
@@ -74,6 +74,11 @@ export class AppDataService extends DataServiceBase {
   public boardSummaries$ = this.appData$.pipe(
     map(({ boards }) => fromBoardsToSummaries(boards))
   );
+
+  private async verifyData() {
+    const data = await dataService.getAppData();
+    observableService.updateAppData(data);
+  }
 
   public initializeDataService = async (
     session: SessionContextValue | null
@@ -105,10 +110,11 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<BoardType>(
       async () => {
         observableService.addBoard(newBoard);
-        return dataService.createBoard(newBoard);
+        const createdBoard = await dataService.createBoard(newBoard);
+        return createdBoard;
       },
       () => {},
-      "An error occured while creating the board"
+      "An error occurred while creating the board"
     );
   };
 
@@ -117,12 +123,12 @@ export class AppDataService extends DataServiceBase {
   ): Promise<BoardType | null> => {
     return this.executeOperation<BoardType>(
       async () => {
-        console.log("update");
         observableService.updateBoard(editedBoard);
-        return dataService.editBoard(editedBoard);
+        const updatedBoard = await dataService.editBoard(editedBoard);
+        return updatedBoard;
       },
       () => {},
-      "An error occured while editing the board"
+      "An error occurred while editing the board"
     );
   };
 
@@ -130,10 +136,11 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<BoardType>(
       async () => {
         observableService.deleteBoard(boardId);
-        return dataService.deleteBoard(boardId);
+        const deletedBoard = await dataService.deleteBoard(boardId);
+        return deletedBoard;
       },
       () => {},
-      "An error occured while deleting the board"
+      "An error occurred while deleting the board"
     );
   };
 
@@ -144,7 +151,7 @@ export class AppDataService extends DataServiceBase {
         await dataService.moveBoard(boardId, before);
       },
       () => {},
-      "An error occured while moving the board"
+      "An error occurred while moving the board"
     );
   };
 
@@ -155,10 +162,11 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<ColumnType>(
       async () => {
         observableService.addColumn(boardId, newColumn);
-        return dataService.addColumn(boardId, newColumn);
+        const addedColumn = await dataService.addColumn(boardId, newColumn);
+        return addedColumn;
       },
       () => {},
-      "An error occured while adding the column"
+      "An error occurred while adding the column"
     );
   };
 
@@ -169,10 +177,14 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<ColumnType>(
       async () => {
         observableService.updateColumn(boardId, editedColumn);
-        return dataService.editColumn(boardId, editedColumn);
+        const updatedColumn = await dataService.editColumn(
+          boardId,
+          editedColumn
+        );
+        return updatedColumn;
       },
       () => {},
-      "An error occured while editing the column"
+      "An error occurred while editing the column"
     );
   };
 
@@ -183,10 +195,11 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<ColumnType>(
       async () => {
         observableService.deleteColumn(boardId, columnId);
-        return dataService.deleteColumn(boardId, columnId);
+        const deletedColumn = await dataService.deleteColumn(boardId, columnId);
+        return deletedColumn;
       },
       () => {},
-      "An error occured while deleting the column"
+      "An error occurred while deleting the column"
     );
   };
 
@@ -201,7 +214,7 @@ export class AppDataService extends DataServiceBase {
         await dataService.moveColumn(boardId, columnId, beforeId);
       },
       () => {},
-      "An error occured while moving the column"
+      "An error occurred while moving the column"
     );
   };
 
@@ -212,10 +225,11 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<TaskType>(
       async () => {
         observableService.addTask(boardId, task);
-        return dataService.createTask(boardId, task);
+        const createdTask = await dataService.createTask(boardId, task);
+        return createdTask;
       },
       () => {},
-      "An error occured while creating the task"
+      "An error occurred while creating the task"
     );
   };
 
@@ -228,10 +242,16 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<TaskType>(
       async () => {
         observableService.updateTask(boardId, taskId, oldColumnId, newTask);
-        return dataService.editTask(boardId, taskId, oldColumnId, newTask);
+        const updatedTask = await dataService.editTask(
+          boardId,
+          taskId,
+          oldColumnId,
+          newTask
+        );
+        return updatedTask;
       },
       () => {},
-      "An error occured while editing the task"
+      "An error occurred while editing the task"
     );
   };
 
@@ -243,10 +263,15 @@ export class AppDataService extends DataServiceBase {
     return this.executeOperation<TaskType>(
       async () => {
         observableService.deleteTask(boardId, columnId, taskId);
-        return dataService.deleteTask(boardId, columnId, taskId);
+        const deletedTask = await dataService.deleteTask(
+          boardId,
+          columnId,
+          taskId
+        );
+        return deletedTask;
       },
       () => {},
-      "An error occured while deleting the task"
+      "An error occurred while deleting the task"
     );
   };
 
@@ -275,7 +300,7 @@ export class AppDataService extends DataServiceBase {
         );
       },
       () => {},
-      "An error occured while moving the task"
+      "An error occurred while moving the task"
     );
   };
 
@@ -286,22 +311,26 @@ export class AppDataService extends DataServiceBase {
     subtaskId: string,
     value: boolean
   ): Promise<void> => {
-    this.executeOperation<void>(async () => {
-      observableService.checkSubtask(
-        boardId,
-        columnId,
-        taskId,
-        subtaskId,
-        value
-      );
-      await dataService.checkSubtask(
-        boardId,
-        columnId,
-        taskId,
-        subtaskId,
-        value
-      );
-    });
+    this.executeOperation<void>(
+      async () => {
+        observableService.checkSubtask(
+          boardId,
+          columnId,
+          taskId,
+          subtaskId,
+          value
+        );
+        await dataService.checkSubtask(
+          boardId,
+          columnId,
+          taskId,
+          subtaskId,
+          value
+        );
+      },
+      () => {},
+      "An error occurred while checking the subtask"
+    );
   };
 }
 

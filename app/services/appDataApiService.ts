@@ -15,7 +15,8 @@ export class AppDataApiService implements IDataService {
   }
 
   async editBoard(board: BoardType): Promise<BoardType | null> {
-    const editedBoard = (await axios.patch("/api/boards", board)).data;
+    const editedBoard = (await axios.patch(`/api/boards/${board.id}`, board))
+      .data;
     return editedBoard;
   }
 

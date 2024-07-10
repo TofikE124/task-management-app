@@ -15,6 +15,7 @@ import Panel from "../Panel";
 import TextField from "../TextField";
 import ListEditor from "../listEditor/ListEditor";
 import appDataService from "@/app/services/appDataService";
+import { getRandomColor } from "@/app/utilities/colors";
 
 const getColumn = (columns: ColumnType[], columnId: string) => {
   return columns.find((col) => col.id == columnId);
@@ -66,7 +67,7 @@ const BoardFormPanel = () => {
           title: data.title,
           columns: data.columns.map((item) => ({
             id: v4(),
-            color: "#fff",
+            color: getRandomColor(),
             title: item.title,
             tasks: [],
             boardId,
