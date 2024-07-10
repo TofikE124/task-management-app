@@ -1,15 +1,11 @@
-import axios from "axios";
+import { prisma } from "@/prisma/client";
+import { Metadata } from "next";
 import QuickActionSidebar from "./components/QuickActionSidebar/QuickActionSidebar";
 import TaskColumns from "./components/TaskColumns";
 import MainContent from "./layouts/MainContent";
 import PageHeader from "./layouts/PageHeader";
 import Panels from "./layouts/Panels";
 import Sidebar from "./layouts/Sidebar";
-import { Metadata } from "next";
-import { BoardType } from "./types/taskTypes";
-import { Board } from "@prisma/client";
-import appDataService from "./services/appDataService";
-import { prisma } from "@/prisma/client";
 
 export default function Home() {
   return (

@@ -42,9 +42,12 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={`bg-white dark:bg-dark-grey w-[300px] h-full border-r border-lines-light dark:border-lines-dark transition-[margin] duration-500 z-30 sm:fixed ${
+        className={`bg-white dark:bg-dark-grey w-[300px] h-full border-r border-lines-light dark:border-lines-dark z-30 sm:fixed ${
           isVisible ? "ml-0" : "ml-[-300px]"
         }`}
+        style={{
+          transition: "background-color 200ms, color 200ms, margin 0.5s",
+        }}
         ref={ref}
       >
         <div className="flex flex-col py-8 pr-6 h-full">

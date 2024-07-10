@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "next-themes";
-import { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren } from "react";
 import useMountStatus from "../hooks/useMountStatus";
 
 const ThemeWrapper = ({ children }: PropsWithChildren) => {
@@ -8,11 +8,9 @@ const ThemeWrapper = ({ children }: PropsWithChildren) => {
   const mounted = useMountStatus();
 
   return (
-    <Suspense>
-      <div className={`${resolvedTheme == "dark" && mounted ? "dark" : ""}`}>
-        {children}
-      </div>
-    </Suspense>
+    <div className={`${resolvedTheme == "dark" && mounted ? "dark" : ""}`}>
+      {children}
+    </div>
   );
 };
 
