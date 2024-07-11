@@ -118,7 +118,7 @@ const AddColumn = () => {
 
   useEffect(() => {
     if (!isVisible || !ref.current) return;
-    ref.current.scrollIntoView({ behavior: "smooth", inline: "end" });
+    ref.current.scrollIntoView({ behavior: "smooth", inline: "nearest" });
   }, [isVisible]);
 
   return (
@@ -131,15 +131,14 @@ const AddColumn = () => {
             disableAnimation
           ></ColumnForm>
         ) : (
-          <MotionButton
-            variant="primary"
-            size="sm"
+          <div
             onClick={show}
-            className="h-fit w-full"
-            layout
+            className="h-full bg-white dark:bg-dark-grey grid place-items-center cursor-pointer rounded-md"
           >
-            + Add Column
-          </MotionButton>
+            <h2 className="heading-l text-main-purple dark:text-white">
+              + New Column
+            </h2>
+          </div>
         )}
       </AnimatePresence>
     </div>

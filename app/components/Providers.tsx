@@ -1,4 +1,3 @@
-import { ThemeProvider } from "next-themes";
 import { PropsWithChildren } from "react";
 import AddColumnProvider from "../contexts/AddColumnProvider";
 import DeleteProvider from "../contexts/deleteProvider";
@@ -14,27 +13,25 @@ import { CurrentBoardProvider } from "../contexts/CurrentBoardProvider";
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <ThemeProvider>
-      <LoadingProvider>
-        <CurrentBoardProvider>
-          <PanelProvider>
-            <SidebarProvider>
-              <QuickActionSidebarProvider>
-                <TaskDataProvider>
-                  <AddColumnProvider>
-                    <DragProvider>
-                      <AuthProvider>
-                        <DeleteProvider>{children}</DeleteProvider>
-                      </AuthProvider>
-                    </DragProvider>
-                  </AddColumnProvider>
-                </TaskDataProvider>
-              </QuickActionSidebarProvider>
-            </SidebarProvider>
-          </PanelProvider>
-        </CurrentBoardProvider>
-      </LoadingProvider>
-    </ThemeProvider>
+    <LoadingProvider>
+      <CurrentBoardProvider>
+        <PanelProvider>
+          <SidebarProvider>
+            <QuickActionSidebarProvider>
+              <TaskDataProvider>
+                <AddColumnProvider>
+                  <DragProvider>
+                    <AuthProvider>
+                      <DeleteProvider>{children}</DeleteProvider>
+                    </AuthProvider>
+                  </DragProvider>
+                </AddColumnProvider>
+              </TaskDataProvider>
+            </QuickActionSidebarProvider>
+          </SidebarProvider>
+        </PanelProvider>
+      </CurrentBoardProvider>
+    </LoadingProvider>
   );
 };
 
