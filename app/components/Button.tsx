@@ -33,15 +33,13 @@ const buttonStyles = cva(
 
 export type ButtonVaraiants = VariantProps<typeof buttonStyles>;
 
-type ButtonProps = ButtonVaraiants &
-  ComponentProps<"button"> & { isMotion?: boolean };
+type ButtonProps = ButtonVaraiants & ComponentProps<"button">;
 
 export const Button = ({
   variant,
   size,
   className,
   disabled = false,
-  isMotion = false,
   ...props
 }: ButtonProps) => {
   return (

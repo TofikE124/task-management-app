@@ -7,7 +7,6 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { useTheme } from "next-themes";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import resolveConfig from "tailwindcss/resolveConfig";
@@ -468,23 +467,26 @@ const ColumnLoading = ({ count = 1 }: ColumnLoadingProps) => {
 };
 
 const ColumnHeaderLoading = () => {
-  const { resolvedTheme } = useTheme();
-
   return (
-    <LoadingSkeleton
-      width="100%"
-      height="18px"
-      baseColor={`${resolvedTheme == "dark" ? "#2B2C37" : "#fff"} `}
-      highlightColor={`${resolvedTheme == "dark" ? "#343641" : "#f9f9f9"} `}
-      containerClassName="h-[18px]"
-      className="cursor-pointer"
-    ></LoadingSkeleton>
+    <>
+      <LoadingSkeleton
+        width="100%"
+        height="18px"
+        containerClassName="h-[18px]"
+        className="cursor-pointer"
+        themeProps={{
+          lightBaseColor: "#fff",
+          lightHighlightColor: "#f9f9f9",
+          darkBaseColor: "#2B2C37",
+          darkHighlightColor: "#343641",
+        }}
+      ></LoadingSkeleton>
+    </>
   );
 };
 
 const TaskLoading = () => {
   const colors = resolveConfig(tailwindConfig).theme.colors as any;
-  const { resolvedTheme } = useTheme();
 
   return (
     <div className="flex flex-col gap-2 py-6 px-4 relative h-[98.75px] w-[280px]">
@@ -492,45 +494,40 @@ const TaskLoading = () => {
         <LoadingSkeleton
           height="98.75px"
           borderRadius="8px"
-          baseColor={`${
-            resolvedTheme == "dark" ? colors["dark-grey"] : colors.white
-          } `}
-          highlightColor={`${
-            resolvedTheme == "dark"
-              ? colors["dark-grey-highlight"]
-              : colors["white-highlight"]
-          } `}
           containerClassName="h-[98.75px]"
           className="cursor-pointer"
+          themeProps={{
+            lightBaseColor: colors.white,
+            lightHighlightColor: colors["white-highlight"],
+            darkBaseColor: colors["dark-grey"],
+            darkHighlightColor: colors["dark-grey-highlight"],
+          }}
         ></LoadingSkeleton>
       </div>
       <LoadingSkeleton
         width="100%"
         height="20px"
         borderRadius="8px"
-        baseColor={`${
-          resolvedTheme == "dark" ? colors["charcoal-grey"] : colors["ghost"]
-        } `}
-        highlightColor={`${
-          resolvedTheme == "dark"
-            ? colors["charcoal-grey-highlight"]
-            : colors["ghost-highlight"]
-        } `}
         containerClassName="h-[20px]"
+        themeProps={{
+          lightBaseColor: colors["ghost"],
+          lightHighlightColor: colors["ghost-highlight"],
+          darkBaseColor: colors["charcoal-grey"],
+          darkHighlightColor: colors["charcoal-grey-highlight"],
+        }}
       ></LoadingSkeleton>
+
       <LoadingSkeleton
         width="100%"
         height="15px"
         borderRadius="8px"
-        baseColor={`${
-          resolvedTheme == "dark" ? colors["charcoal-grey"] : colors["ghost"]
-        } `}
-        highlightColor={`${
-          resolvedTheme == "dark"
-            ? colors["charcoal-grey-highlight"]
-            : colors["ghost-highlight"]
-        } `}
         containerClassName="h-[15px]"
+        themeProps={{
+          lightBaseColor: colors["ghost"],
+          lightHighlightColor: colors["ghost-highlight"],
+          darkBaseColor: colors["charcoal-grey"],
+          darkHighlightColor: colors["charcoal-grey-highlight"],
+        }}
       ></LoadingSkeleton>
     </div>
   );

@@ -46,9 +46,11 @@ select {
   font: inherit;
 }
 
-textarea,
-input {
-  @apply sm:text-[16px] #{!important};
+input,
+textarea {
+  @screen sm {
+    font-size: 16px !important;
+  }
 }
 
 /* remove animations for people who've turned them off */

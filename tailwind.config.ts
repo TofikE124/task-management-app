@@ -52,9 +52,6 @@ const config: Config = {
         "lines-dark": "#3E3F4E",
         "lines-light": "#E4EBFA",
       },
-      screens: {
-        lg: "",
-      },
     },
   },
   plugins: [
