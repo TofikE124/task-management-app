@@ -1,5 +1,9 @@
 <div align="center">
-  <br />
+
+<h1 align="center">Task Management App</h1>
+
+  <p align="center">A responsive task management application with drag-and-drop functionality and dark/light mode support.</p>
+
   <a href="https://task-management-app-lovat.vercel.app/" target="_blank">
     <img src="./public/images/preview/KanbanTaskManagment-large.png" alt="Project Banner">
   </a>
@@ -11,11 +15,8 @@
     <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="Tailwind CSS" />
     <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" alt="Prisma" />
   </div>
-
-<h1 align="center">Task Management App</h1>
-
-  <p align="center">A responsive task management application with drag-and-drop functionality and dark/light mode support.</p>
 </div>
+
 
 ## 🚀 Features
 
